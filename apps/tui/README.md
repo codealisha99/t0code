@@ -1,31 +1,30 @@
-# t1code
+# t0code
 
-Terminal-first T3 Code fork with an OpenTUI client.
+Terminal-first coding-agent client with an OpenTUI UI.
 
-## Install
+## Run from this repo
 
 ```bash
-bunx @maria_rcks/t1code
+bun install
+bun dev:tui
 ```
 
 Requires Bun `>=1.3.9`.
 
 Linux notes:
 
-- T1Code follows XDG defaults on Linux:
+- t0code follows XDG defaults on Linux:
   `XDG_CONFIG_HOME/t1code` for prefs, `XDG_STATE_HOME/t1code` for logs and image state, and `XDG_DATA_HOME/t1code` for app data.
 - Opening links uses desktop helpers such as `xdg-open` or `gio open`.
 - Clipboard image paste works with `wl-paste` on Wayland or `xclip` on X11.
 
-## What You Get
+## What you get
 
 - Native-feeling terminal UI built on OpenTUI
 - Bundled server and web client for local use
-- Codex-first workflow tuned for terminal usage
+- Codex-first workflow, plus Claude, Cursor, and OpenCode
 
 ## Source
 
-- Repo: https://github.com/maria-rcks/t1code
-- Issues: https://github.com/maria-rcks/t1code/issues
-
-Based on T3 Code by `@t3dotgg` and `@juliusmarminge`.
+- Repo: https://github.com/codealisha99/t0code
+- Issues: https://github.com/codealisha99/t0code/issues
