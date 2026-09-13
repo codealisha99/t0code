@@ -395,7 +395,7 @@ export const makeServerProgram = (input: CliInput, layers: ServerProgramLayers =
         ? `http://${formatHostForUrl(config.host)}:${config.port}`
         : localUrl;
     const { authToken, devUrl, ...safeConfig } = config;
-    yield* Effect.logInfo("T3 Code running", {
+    yield* Effect.logInfo("t0code running", {
       ...safeConfig,
       devUrl: devUrl?.toString(),
       authEnabled: Boolean(authToken),
@@ -484,7 +484,7 @@ export const makeT3CliCommand = (programLayers: ServerProgramLayers = LayerLive)
     autoBootstrapProjectFromCwd: autoBootstrapProjectFromCwdFlag,
     logWebSocketEvents: logWebSocketEventsFlag,
   }).pipe(
-    Command.withDescription("Run the T3 Code server."),
+    Command.withDescription("Run the t0code server."),
     Command.withHandler((input) => Effect.scoped(makeServerProgram(input, programLayers))),
   );
 
