@@ -22,8 +22,13 @@ import {
 } from "@t3tools/contracts";
 import { applyClaudePromptEffortPrefix, resolveModelSlugForProvider } from "@t3tools/shared/model";
 import {
+  enqueueFollowUp,
+  followUpsForThread,
   isLegacyProviderKind,
   isProviderPickerKind,
+  removeFollowUp,
+  takeNextFollowUp,
+  type FollowUpQueueItem,
   type ProviderPickerKind,
 } from "@t3tools/client-core";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -327,6 +332,11 @@ export default function ChatView({ threadId }: ChatViewProps) {
   const [isDragOverComposer, setIsDragOverComposer] = useState(false);
   const [expandedImage, setExpandedImage] = useState<ExpandedImagePreview | null>(null);
   const [optimisticUserMessages, setOptimisticUserMessages] = useState<ChatMessage[]>([]);
+  const [queuedFollowUps, setQueuedFollowUps] = useState<FollowUpQueueItem[]>([]);
+  const activeQueuedFollowUps = useMemo(
+    () => followUpsForThread(queuedFollowUps, threadId),
+    [queuedFollowUps, threadId],
+  );
   const optimisticUserMessagesRef = useRef(optimisticUserMessages);
   optimisticUserMessagesRef.current = optimisticUserMessages;
   const composerTerminalContextsRef = useRef<TerminalContextDraft[]>(composerTerminalContexts);
@@ -776,7 +786,8 @@ export default function ChatView({ threadId }: ChatViewProps) {
   const hasComposerHeader =
     isComposerApprovalState ||
     pendingUserInputs.length > 0 ||
-    (showPlanFollowUpPrompt && activeProposedPlan !== null);
+    (showPlanFollowUpPrompt && activeProposedPlan !== null) ||
+    activeQueuedFollowUps.length > 0;
   const composerFooterHasWideActions = showPlanFollowUpPrompt || activePendingProgress !== null;
   const composerFooterActionLayoutKey = useMemo(() => {
     if (activePendingProgress) {
@@ -2486,6 +2497,23 @@ export default function ChatView({ threadId }: ChatViewProps) {
       }
       return;
     }
+    if (isTurnRunning) {
+      const queuedItem: FollowUpQueueItem = {
+        id: newMessageId(),
+        threadId: activeThread.id,
+        text: trimmed,
+        createdAt: new Date().toISOString(),
+      };
+      setQueuedFollowUps((current) => enqueueFollowUp(current, queuedItem));
+      promptRef.current = "";
+      clearComposerDraftContent(activeThread.id);
+      setComposerHighlightedItemId(null);
+      setComposerCursor(0);
+      setComposerTrigger(null);
+      shouldAutoScrollRef.current = true;
+      forceStickToBottom();
+      return;
+    }
     if (!activeProject) return;
     const threadIdForSend = activeThread.id;
     const isFirstMessage = !isServerThread || activeThread.messages.length === 0;
@@ -2725,6 +2753,21 @@ export default function ChatView({ threadId }: ChatViewProps) {
       resetSendPhase();
     }
   };
+  const onSendRef = useRef(onSend);
+  onSendRef.current = onSend;
+
+  useEffect(() => {
+    if (isTurnRunning || isSendBusy || isConnecting || sendInFlightRef.current || !activeThread) {
+      return;
+    }
+    const { next, remaining } = takeNextFollowUp(queuedFollowUps, activeThread.id);
+    if (!next) {
+      return;
+    }
+    setQueuedFollowUps(remaining);
+    promptRef.current = next.text;
+    void onSendRef.current();
+  }, [activeThread, isConnecting, isSendBusy, isTurnRunning, queuedFollowUps]);
 
   const onInterrupt = async () => {
     const api = readNativeApi();
@@ -3692,6 +3735,23 @@ export default function ChatView({ threadId }: ChatViewProps) {
                         key={activeProposedPlan.id}
                         planTitle={proposedPlanTitle(activeProposedPlan.planMarkdown) ?? null}
                       />
+                    </div>
+                  ) : activeQueuedFollowUps.length > 0 ? (
+                    <div className="rounded-t-[19px] border-b border-border/65 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:px-4">
+                      {activeQueuedFollowUps.length === 1
+                        ? "1 message queued — sending when this turn finishes."
+                        : `${activeQueuedFollowUps.length} messages queued — sending when this turn finishes.`}
+                      <button
+                        type="button"
+                        className="ml-2 underline underline-offset-2"
+                        onClick={() =>
+                          setQueuedFollowUps((current) =>
+                            removeFollowUp(current, activeQueuedFollowUps[0]?.id ?? ""),
+                          )
+                        }
+                      >
+                        Remove next
+                      </button>
                     </div>
                   ) : null}
                   <div
