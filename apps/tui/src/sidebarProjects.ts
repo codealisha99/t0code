@@ -1,36 +1,28 @@
+import {
+  collapseProject as coreCollapseProject,
+  ensureProjectExpanded as coreEnsureProjectExpanded,
+  pruneExpandedProjects as corePruneExpandedProjects,
+} from "@t3tools/client-core/threadSelection";
+
 export function ensureProjectExpanded(
   expandedProjectIds: ReadonlySet<string>,
   projectId: string,
 ): ReadonlySet<string> {
-  if (expandedProjectIds.has(projectId)) return expandedProjectIds;
-  return new Set([...expandedProjectIds, projectId]);
+  return coreEnsureProjectExpanded(expandedProjectIds, projectId);
 }
 
 export function collapseProject(
   expandedProjectIds: ReadonlySet<string>,
   projectId: string,
 ): ReadonlySet<string> {
-  if (!expandedProjectIds.has(projectId)) return expandedProjectIds;
-  const next = new Set(expandedProjectIds);
-  next.delete(projectId);
-  return next;
+  return coreCollapseProject(expandedProjectIds, projectId);
 }
 
 export function pruneExpandedProjects(
   expandedProjectIds: ReadonlySet<string>,
   projectIds: readonly string[],
 ): ReadonlySet<string> {
-  const liveProjectIds = new Set(projectIds);
-  let changed = false;
-  const next = new Set<string>();
-  for (const projectId of expandedProjectIds) {
-    if (liveProjectIds.has(projectId)) {
-      next.add(projectId);
-    } else {
-      changed = true;
-    }
-  }
-  return changed ? next : expandedProjectIds;
+  return corePruneExpandedProjects(expandedProjectIds, new Set(projectIds));
 }
 
 export function resolveProjectExpansionOnRowPress(input: {
