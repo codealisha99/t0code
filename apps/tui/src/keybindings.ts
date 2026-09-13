@@ -8,6 +8,11 @@ import {
   type ResolvedKeybindingsConfig,
   type ThreadJumpKeybindingCommand,
 } from "@t3tools/contracts";
+import {
+  evaluateWhenNode as coreEvaluateWhenNode,
+  matchesWhenClause as coreMatchesWhenClause,
+  type MatchContext,
+} from "@t3tools/client-core/keybindingsMatch";
 
 export interface TuiShortcutEventLike {
   readonly keyName: string;
@@ -86,27 +91,18 @@ function resolveContext(options: TuiShortcutMatchOptions | undefined): TuiShortc
   };
 }
 
-function evaluateWhenNode(node: KeybindingWhenNode, context: TuiShortcutMatchContext): boolean {
-  switch (node.type) {
-    case "identifier":
-      if (node.name === "true") return true;
-      if (node.name === "false") return false;
-      return Boolean(context[node.name]);
-    case "not":
-      return !evaluateWhenNode(node.node, context);
-    case "and":
-      return evaluateWhenNode(node.left, context) && evaluateWhenNode(node.right, context);
-    case "or":
-      return evaluateWhenNode(node.left, context) || evaluateWhenNode(node.right, context);
-  }
+export function evaluateWhenNode(
+  node: KeybindingWhenNode,
+  context: TuiShortcutMatchContext,
+): boolean {
+  return coreEvaluateWhenNode(node, context as MatchContext);
 }
 
-function matchesWhenClause(
+export function matchesWhenClause(
   whenAst: KeybindingWhenNode | undefined,
   context: TuiShortcutMatchContext,
 ): boolean {
-  if (!whenAst) return true;
-  return evaluateWhenNode(whenAst, context);
+  return coreMatchesWhenClause(whenAst, context as MatchContext);
 }
 
 export function resolveTuiShortcutCommand(
