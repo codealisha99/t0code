@@ -5,6 +5,14 @@ import {
   type ResolvedKeybindingsConfig,
 } from "@t3tools/contracts";
 import { isMacPlatform } from "./lib/utils";
+import {
+  evaluateWhenNode as coreEvaluateWhenNode,
+  formatShortcutLabel as coreFormatShortcutLabel,
+  matchesShortcut as coreMatchesShortcut,
+  matchesWhenClause as coreMatchesWhenClause,
+  shortcutLabelForCommand as coreShortcutLabelForCommand,
+  type MatchContext,
+} from "@t3tools/client-core/keybindingsMatch";
 
 export interface ShortcutEventLike {
   type?: string;
@@ -37,23 +45,12 @@ function normalizeEventKey(key: string): string {
   return normalized;
 }
 
-function matchesShortcut(
+export function matchesShortcut(
   event: ShortcutEventLike,
   shortcut: KeybindingShortcut,
   platform = navigator.platform,
 ): boolean {
-  const key = normalizeEventKey(event.key);
-  if (key !== shortcut.key) return false;
-
-  const useMetaForMod = isMacPlatform(platform);
-  const expectedMeta = shortcut.metaKey || (shortcut.modKey && useMetaForMod);
-  const expectedCtrl = shortcut.ctrlKey || (shortcut.modKey && !useMetaForMod);
-  return (
-    event.metaKey === expectedMeta &&
-    event.ctrlKey === expectedCtrl &&
-    event.shiftKey === shortcut.shiftKey &&
-    event.altKey === shortcut.altKey
-  );
+  return coreMatchesShortcut(event, shortcut, platform);
 }
 
 function resolvePlatform(options: ShortcutMatchOptions | undefined): string {
@@ -68,27 +65,15 @@ function resolveContext(options: ShortcutMatchOptions | undefined): ShortcutMatc
   };
 }
 
-function evaluateWhenNode(node: KeybindingWhenNode, context: ShortcutMatchContext): boolean {
-  switch (node.type) {
-    case "identifier":
-      if (node.name === "true") return true;
-      if (node.name === "false") return false;
-      return Boolean(context[node.name]);
-    case "not":
-      return !evaluateWhenNode(node.node, context);
-    case "and":
-      return evaluateWhenNode(node.left, context) && evaluateWhenNode(node.right, context);
-    case "or":
-      return evaluateWhenNode(node.left, context) || evaluateWhenNode(node.right, context);
-  }
+export function evaluateWhenNode(node: KeybindingWhenNode, context: ShortcutMatchContext): boolean {
+  return coreEvaluateWhenNode(node, context as MatchContext);
 }
 
-function matchesWhenClause(
+export function matchesWhenClause(
   whenAst: KeybindingWhenNode | undefined,
   context: ShortcutMatchContext,
 ): boolean {
-  if (!whenAst) return true;
-  return evaluateWhenNode(whenAst, context);
+  return coreMatchesWhenClause(whenAst, context as MatchContext);
 }
 
 function matchesCommandShortcut(
@@ -118,39 +103,11 @@ export function resolveShortcutCommand(
   return null;
 }
 
-function formatShortcutKeyLabel(key: string): string {
-  if (key === " ") return "Space";
-  if (key.length === 1) return key.toUpperCase();
-  if (key === "escape") return "Esc";
-  if (key === "arrowup") return "Up";
-  if (key === "arrowdown") return "Down";
-  if (key === "arrowleft") return "Left";
-  if (key === "arrowright") return "Right";
-  return key.slice(0, 1).toUpperCase() + key.slice(1);
-}
-
 export function formatShortcutLabel(
   shortcut: KeybindingShortcut,
   platform = navigator.platform,
 ): string {
-  const keyLabel = formatShortcutKeyLabel(shortcut.key);
-  const useMetaForMod = isMacPlatform(platform);
-  const showMeta = shortcut.metaKey || (shortcut.modKey && useMetaForMod);
-  const showCtrl = shortcut.ctrlKey || (shortcut.modKey && !useMetaForMod);
-  const showAlt = shortcut.altKey;
-  const showShift = shortcut.shiftKey;
-
-  if (useMetaForMod) {
-    return `${showCtrl ? "\u2303" : ""}${showAlt ? "\u2325" : ""}${showShift ? "\u21e7" : ""}${showMeta ? "\u2318" : ""}${keyLabel}`;
-  }
-
-  const parts: string[] = [];
-  if (showCtrl) parts.push("Ctrl");
-  if (showAlt) parts.push("Alt");
-  if (showShift) parts.push("Shift");
-  if (showMeta) parts.push("Meta");
-  parts.push(keyLabel);
-  return parts.join("+");
+  return coreFormatShortcutLabel(shortcut, platform);
 }
 
 export function shortcutLabelForCommand(
@@ -158,12 +115,7 @@ export function shortcutLabelForCommand(
   command: KeybindingCommand,
   platform = navigator.platform,
 ): string | null {
-  for (let index = keybindings.length - 1; index >= 0; index -= 1) {
-    const binding = keybindings[index];
-    if (!binding || binding.command !== command) continue;
-    return formatShortcutLabel(binding.shortcut, platform);
-  }
-  return null;
+  return coreShortcutLabelForCommand(keybindings, command, platform);
 }
 
 export function isTerminalToggleShortcut(

@@ -1,3 +1,5 @@
+import { parseStandaloneComposerModeCommand } from "@t3tools/client-core/slashCommands";
+import { replaceTextRange as coreReplaceTextRange } from "@t3tools/client-core/composerMentions";
 import { splitPromptIntoComposerSegments } from "./composer-editor-mentions";
 import { INLINE_TERMINAL_CONTEXT_PLACEHOLDER } from "./lib/terminalContext";
 
@@ -240,13 +242,7 @@ export function detectComposerTrigger(text: string, cursorInput: number): Compos
 export function parseStandaloneComposerSlashCommand(
   text: string,
 ): Exclude<ComposerSlashCommand, "model"> | null {
-  const match = /^\/(plan|default)\s*$/i.exec(text.trim());
-  if (!match) {
-    return null;
-  }
-  const command = match[1]?.toLowerCase();
-  if (command === "plan") return "plan";
-  return "default";
+  return parseStandaloneComposerModeCommand(text);
 }
 
 export function replaceTextRange(
@@ -255,8 +251,5 @@ export function replaceTextRange(
   rangeEnd: number,
   replacement: string,
 ): { text: string; cursor: number } {
-  const safeStart = Math.max(0, Math.min(text.length, rangeStart));
-  const safeEnd = Math.max(safeStart, Math.min(text.length, rangeEnd));
-  const nextText = `${text.slice(0, safeStart)}${replacement}${text.slice(safeEnd)}`;
-  return { text: nextText, cursor: safeStart + replacement.length };
+  return coreReplaceTextRange(text, rangeStart, rangeEnd, replacement);
 }
