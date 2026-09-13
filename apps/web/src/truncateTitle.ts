@@ -1,7 +1,5 @@
-export function truncateTitle(text: string, maxLength = 50): string {
-  const trimmed = text.trim();
-  if (trimmed.length <= maxLength) {
-    return trimmed;
-  }
-  return `${trimmed.slice(0, maxLength)}...`;
-}
+export {
+  truncateTitle,
+  truncateTitleForDisplay,
+  DEFAULT_THREAD_TITLE,
+} from "@t3tools/client-core/truncateTitle";

@@ -6,6 +6,12 @@
  */
 
 import type { ThreadId } from "@t3tools/contracts";
+import {
+  clearThreadSelection as coreClearThreadSelection,
+  rangeSelectThreads as coreRangeSelectThreads,
+  removeFromThreadSelection as coreRemoveFromThreadSelection,
+  toggleThreadSelection as coreToggleThreadSelection,
+} from "@t3tools/client-core/threadSelection";
 import { create } from "zustand";
 
 export interface ThreadSelectionState {
@@ -41,57 +47,28 @@ export const useThreadSelectionStore = create<ThreadSelectionStore>((set, get) =
   anchorThreadId: null,
 
   toggleThread: (threadId) => {
-    set((state) => {
-      const next = new Set(state.selectedThreadIds);
-      if (next.has(threadId)) {
-        next.delete(threadId);
-      } else {
-        next.add(threadId);
-      }
-      return {
-        selectedThreadIds: next,
-        anchorThreadId: next.has(threadId) ? threadId : state.anchorThreadId,
-      };
-    });
+    set((state) => coreToggleThreadSelection(state, threadId as string) as ThreadSelectionState);
   },
 
   rangeSelectTo: (threadId, orderedThreadIds) => {
-    set((state) => {
-      const anchor = state.anchorThreadId;
-      if (anchor === null) {
-        // No anchor yet — treat as a single toggle
-        const next = new Set(state.selectedThreadIds);
-        next.add(threadId);
-        return { selectedThreadIds: next, anchorThreadId: threadId };
-      }
-
-      const anchorIndex = orderedThreadIds.indexOf(anchor);
-      const targetIndex = orderedThreadIds.indexOf(threadId);
-      if (anchorIndex === -1 || targetIndex === -1) {
-        // Anchor or target not in this list (different project?) — fallback to toggle
-        const next = new Set(state.selectedThreadIds);
-        next.add(threadId);
-        return { selectedThreadIds: next, anchorThreadId: threadId };
-      }
-
-      const start = Math.min(anchorIndex, targetIndex);
-      const end = Math.max(anchorIndex, targetIndex);
-      const next = new Set(state.selectedThreadIds);
-      for (let i = start; i <= end; i++) {
-        const id = orderedThreadIds[i];
-        if (id !== undefined) {
-          next.add(id);
-        }
-      }
-      // Keep anchor stable so subsequent shift-clicks extend from the same point
-      return { selectedThreadIds: next, anchorThreadId: anchor };
-    });
+    set(
+      (state) =>
+        coreRangeSelectThreads(
+          state as { selectedThreadIds: ReadonlySet<string>; anchorThreadId: string | null },
+          threadId as string,
+          orderedThreadIds as readonly string[],
+        ) as ThreadSelectionState,
+    );
   },
 
   clearSelection: () => {
     const state = get();
     if (state.selectedThreadIds.size === 0 && state.anchorThreadId === null) return;
-    set({ selectedThreadIds: EMPTY_SET, anchorThreadId: null });
+    const cleared = coreClearThreadSelection();
+    set({
+      selectedThreadIds: cleared.selectedThreadIds as ReadonlySet<ThreadId>,
+      anchorThreadId: cleared.anchorThreadId as ThreadId | null,
+    });
   },
 
   setAnchor: (threadId) => {
@@ -101,22 +78,15 @@ export const useThreadSelectionStore = create<ThreadSelectionStore>((set, get) =
 
   removeFromSelection: (threadIds) => {
     set((state) => {
-      const toRemove = new Set(threadIds);
-      let changed = false;
-      const next = new Set<ThreadId>();
-      for (const id of state.selectedThreadIds) {
-        if (toRemove.has(id)) {
-          changed = true;
-        } else {
-          next.add(id);
-        }
-      }
-      if (!changed) return state;
-      const newAnchor =
-        state.anchorThreadId !== null && toRemove.has(state.anchorThreadId)
-          ? null
-          : state.anchorThreadId;
-      return { selectedThreadIds: next, anchorThreadId: newAnchor };
+      const next = coreRemoveFromThreadSelection(
+        state as { selectedThreadIds: ReadonlySet<string>; anchorThreadId: string | null },
+        threadIds as readonly string[],
+      );
+      if (next === state) return state;
+      return {
+        selectedThreadIds: next.selectedThreadIds as ReadonlySet<ThreadId>,
+        anchorThreadId: next.anchorThreadId as ThreadId | null,
+      };
     });
   },
 
