@@ -39,6 +39,46 @@
     "./wsTransport": {
       "import": "./src/wsTransport.ts",
       "types": "./src/wsTransport.ts"
+    },
+    "./truncateTitle": {
+      "import": "./src/truncateTitle.ts",
+      "types": "./src/truncateTitle.ts"
+    },
+    "./slashCommands": {
+      "import": "./src/slashCommands.ts",
+      "types": "./src/slashCommands.ts"
+    },
+    "./keybindingsMatch": {
+      "import": "./src/keybindingsMatch.ts",
+      "types": "./src/keybindingsMatch.ts"
+    },
+    "./threadVisited": {
+      "import": "./src/threadVisited.ts",
+      "types": "./src/threadVisited.ts"
+    },
+    "./threadSelection": {
+      "import": "./src/threadSelection.ts",
+      "types": "./src/threadSelection.ts"
+    },
+    "./formatTime": {
+      "import": "./src/formatTime.ts",
+      "types": "./src/formatTime.ts"
+    },
+    "./composerLabels": {
+      "import": "./src/composerLabels.ts",
+      "types": "./src/composerLabels.ts"
+    },
+    "./gitResult": {
+      "import": "./src/gitResult.ts",
+      "types": "./src/gitResult.ts"
+    },
+    "./providerInstances": {
+      "import": "./src/providerInstances.ts",
+      "types": "./src/providerInstances.ts"
+    },
+    "./composerMentions": {
+      "import": "./src/composerMentions.ts",
+      "types": "./src/composerMentions.ts"
     }
   },
   "scripts": {

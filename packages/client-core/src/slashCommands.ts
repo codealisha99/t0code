@@ -139,3 +139,58 @@ export function extractSlashCommandQuery(input: string): string | null {
 
   return SLASH_COMMAND_DEFINITIONS.some((item) => item.command.startsWith(query)) ? query : null;
 }
+
+export type InteractionModeCommand = "plan" | "default";
+
+export function parseStandaloneComposerModeCommand(text: string): InteractionModeCommand | null {
+  const match = /^\/(plan|default)\s*$/i.exec(text.trim());
+  if (!match) {
+    return null;
+  }
+  return match[1]?.toLowerCase() === "plan" ? "plan" : "default";
+}
+
+export type ApprovalDecision = "accept" | "acceptForSession" | "decline" | "cancel";
+
+export function parseApprovalResponseCommand(text: string): ApprovalDecision | null {
+  const match = /^\/approve\s+([a-z-]+)\s*$/i.exec(text.trim());
+  if (!match) {
+    return null;
+  }
+
+  switch ((match[1] ?? "").toLowerCase()) {
+    case "accept":
+      return "accept";
+    case "accept-for-session":
+    case "acceptforsession":
+      return "acceptForSession";
+    case "decline":
+      return "decline";
+    case "cancel":
+      return "cancel";
+    default:
+      return null;
+  }
+}
+
+export function normalizeApprovalDecision(value: string): ApprovalDecision | null {
+  switch (value.trim().toLowerCase()) {
+    case "accept":
+    case "approve":
+    case "once":
+      return "accept";
+    case "acceptforsession":
+    case "accept-for-session":
+    case "always":
+      return "acceptForSession";
+    case "decline":
+    case "deny":
+    case "reject":
+      return "decline";
+    case "cancel":
+    case "abort":
+      return "cancel";
+    default:
+      return null;
+  }
+}
