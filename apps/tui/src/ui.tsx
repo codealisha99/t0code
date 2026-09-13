@@ -125,6 +125,9 @@ import {
   type LatestProposedPlanState,
   type ThreadStatusPill,
   WsTransport,
+  enqueueFollowUp,
+  takeNextFollowUp,
+  type FollowUpQueueItem,
   formatContextWindowTokens,
   type ContextWindowSnapshot,
   type SlashCommandDefinition,
@@ -2626,7 +2629,7 @@ function ComposerSendButton(props: {
   label?: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: "send" | "stop";
+  variant?: "send" | "stop" | "queue";
   width?: number;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -2715,6 +2718,7 @@ export function App({
   const sendInFlightRef = useRef(false);
   const interruptInFlightRef = useRef(false);
   const [pendingSends, setPendingSends] = useState<PendingSendPreview[]>([]);
+  const [queuedFollowUps, setQueuedFollowUps] = useState<FollowUpQueueItem[]>([]);
   const [sendAnimationTick, setSendAnimationTick] = useState(0);
   const [sidebarPulseTick, setSidebarPulseTick] = useState(0);
   const [projectPathDraft, setProjectPathDraft] = useState("");
@@ -8660,8 +8664,8 @@ export function App({
     }
   }
 
-  async function sendPrompt() {
-    const rawComposerValue = readComposerValue();
+  async function sendPrompt(overrideText?: string) {
+    const rawComposerValue = overrideText ?? readComposerValue();
     const trimmedComposerValue = rawComposerValue.trim();
     const standaloneModeCommand = parseStandaloneComposerModeCommand(trimmedComposerValue);
     if (sendInFlightRef.current || imagePasteInFlight) {
@@ -8834,9 +8838,40 @@ export function App({
           followUp.interactionMode === "default" ? "Implementing plan" : "Plan feedback sent",
         );
         logger.log("composer.sent", { threadId: activeThread.id, length: followUp.text.length });
+        scrollTimelineToBottom();
         return;
       }
       if (!trimmed && pendingAttachments.length === 0) {
+        return;
+      }
+      if (!overrideText && activeThreadIsRunning && activeThread) {
+        const queuedAt = nowIso();
+        const queuedId = newMessageId();
+        setQueuedFollowUps((current) =>
+          enqueueFollowUp(current, {
+            id: queuedId,
+            threadId: activeThread.id,
+            text: promptTextForSend,
+            createdAt: queuedAt,
+          }),
+        );
+        setPendingSends((current) => [
+          ...current,
+          {
+            threadId: activeThread.id,
+            messageId: queuedId,
+            text: promptTextForSend,
+            mentions: composerMentions,
+            attachments: [],
+            createdAt: queuedAt,
+            visibleUntil: Number.POSITIVE_INFINITY,
+          },
+        ]);
+        resetComposerTextarea("");
+        setComposerMentions([]);
+        setComposerAttachments([]);
+        scrollTimelineToBottom();
+        setStatus("Queued — will send when this turn finishes");
         return;
       }
       const submissionAttachments = pendingAttachments.map((attachment) => ({
@@ -8983,10 +9018,26 @@ export function App({
       });
       setStatus("Prompt sent");
       logger.log("composer.sent", { threadId, length: trimmed.length });
+      scrollTimelineToBottom();
     } finally {
       sendInFlightRef.current = false;
     }
   }
+  const sendPromptRef = useRef(sendPrompt);
+  sendPromptRef.current = sendPrompt;
+
+  useEffect(() => {
+    if (activeThreadIsRunning || sendInFlightRef.current || !activeThreadId) {
+      return;
+    }
+    const { next, remaining } = takeNextFollowUp(queuedFollowUps, activeThreadId);
+    if (!next) {
+      return;
+    }
+    setQueuedFollowUps(remaining);
+    setPendingSends((current) => current.filter((entry) => entry.messageId !== next.id));
+    void sendPromptRef.current(next.text);
+  }, [activeThreadId, activeThreadIsRunning, queuedFollowUps]);
 
   async function interruptActiveTurn() {
     if (!activeThread || !activeThreadIsRunning || interruptInFlightRef.current) {
@@ -11108,7 +11159,7 @@ export function App({
                         <SettingsSection title="General">
                           <SettingsRow
                             title="Theme"
-                            description="Choose how T3 Code looks across the app."
+                            description="Choose how t0code looks across the app."
                             resetAction={
                               appSettings.theme !== DEFAULT_APP_THEME ? (
                                 <SettingResetButton
@@ -14744,10 +14795,10 @@ export function App({
                           ) {
                             if (!key.shift) {
                               key.preventDefault();
-                              if (composerPrimaryAction === "send") {
-                                void sendPrompt();
-                              } else {
+                              if (composerPrimaryAction === "stop") {
                                 void interruptActiveTurn();
+                              } else {
+                                void sendPrompt();
                               }
                             } else {
                               syncComposerFromTextarea();
@@ -14764,10 +14815,10 @@ export function App({
                           if (imagePasteInFlight || activePendingApproval) {
                             return;
                           }
-                          if (composerPrimaryAction === "send") {
-                            void sendPrompt();
-                          } else {
+                          if (composerPrimaryAction === "stop") {
                             void interruptActiveTurn();
+                          } else {
+                            void sendPrompt();
                           }
                         }}
                         keyBindings={[
@@ -14958,16 +15009,18 @@ export function App({
                             variant={composerPrimaryAction}
                             disabled={
                               imagePasteInFlight ||
-                              (composerPrimaryAction === "send" && !composerHasSendableContent)
+                              ((composerPrimaryAction === "send" ||
+                                composerPrimaryAction === "queue") &&
+                                !composerHasSendableContent)
                             }
                             onPress={() => {
                               if (imagePasteInFlight) {
                                 return;
                               }
-                              if (composerPrimaryAction === "send") {
-                                void sendPrompt();
-                              } else {
+                              if (composerPrimaryAction === "stop") {
                                 void interruptActiveTurn();
+                              } else {
+                                void sendPrompt();
                               }
                             }}
                           />

@@ -7,6 +7,7 @@ export * from "./knownEnvironment";
 export * from "./modelPickerSearch";
 export * from "./nativeApi";
 export * from "./pendingUserInput";
+export * from "./followUpQueue";
 export * from "./proposedPlan";
 export * from "./scoped";
 export * from "./sidebarStatus";
