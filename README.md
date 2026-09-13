@@ -67,4 +67,6 @@ Default local ports are server `3773` and web `5733`. The web app talks to the s
 - Submitting a message **scrolls the timeline to the bottom**.
 - Server data lives under `T3CODE_HOME` (default `~/.t3`). See [REMOTE.md](./REMOTE.md) for host, auth token, and remote access.
 
+Architecture, package map, and what to test: [ARCHITECTURE.md](./ARCHITECTURE.md).
+
 The cover image at [`assets/repo/t0code-cover.png`](./assets/repo/t0code-cover.png) is also the GitHub social preview. Upload the same file under Settings → Social preview if GitHub does not pick it up from the README.
