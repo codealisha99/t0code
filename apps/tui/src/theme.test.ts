@@ -100,9 +100,9 @@ describe("resolveTuiTheme", () => {
       input: "dark" as const,
       expected: {
         mode: "dark",
-        canvas: "#171717",
-        composerSend: "#2f438e",
-        codeBlockBackground: "#101010",
+        canvas: "#16181d",
+        composerSend: "#245bd6",
+        codeBlockBackground: "#111318",
         diffSign: "#4ade80",
         buttonText: "#d1d5db",
       },
@@ -111,14 +111,14 @@ describe("resolveTuiTheme", () => {
       input: "light" as const,
       expected: {
         mode: "light",
-        canvas: "#f5f5f5",
-        composerSend: "#60a5fa",
-        codeBlockBackground: "#101010",
-        diffSign: "#f87171",
+        canvas: "#f5f6f8",
+        composerSend: "#245bd6",
+        codeBlockBackground: "#e9edf3",
+        diffSign: "#b4233a",
         buttonText: "#f5f5f5",
       },
     },
-  ])("preserves the existing $input theme values", ({ input, expected }) => {
+  ])("resolves the $input design tokens", ({ input, expected }) => {
     const theme = resolveTuiTheme(input);
 
     expect(theme.id).toBe("default");
@@ -139,7 +139,7 @@ describe("resolveTuiTheme", () => {
 
     expect(theme.mode).toBe("light");
     expect(theme.id).toBe("default");
-    expect(theme.palette.canvas).toBe("#f5f5f5");
+    expect(theme.palette.canvas).toBe("#f5f6f8");
   });
 
   it("builds the terminal-match preset from terminal colors", () => {
