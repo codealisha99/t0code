@@ -1,0 +1,6 @@
+#!/bin/sh
+# Keep GitHub attribution on codealisha99 only.
+sed -i '' \
+  -e '/^Co-authored-by: Cursor <cursoragent@cursor.com>$/d' \
+  -e '/^Co-authored-by:.*cursoragent@cursor.com>$/d' \
+  "$1"
