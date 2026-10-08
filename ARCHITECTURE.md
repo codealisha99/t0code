@@ -19,19 +19,19 @@ Clients do **not** talk to providers directly. They call a typed `NativeApi` ove
 
 This is a Bun workspaces + Turbo monorepo. Internal npm names still say `@t3tools/*` and the server package is `t3`. That is leftover from the T3 Code / t1code lineage. User-facing name is **t0code**.
 
-| Path | Package | Role |
-|------|---------|------|
-| [`apps/server`](apps/server) | `t3` | WebSocket/HTTP server, orchestration, providers, git, PTY, SQLite |
-| [`apps/web`](apps/web) | `@t3tools/web` | React 19 + Vite UI (chat, composer, diffs, settings) |
-| [`apps/tui`](apps/tui) | `@maria_rcks/t1code` | OpenTUI + React terminal UI (primary product surface) |
-| [`apps/desktop`](apps/desktop) | `@t3tools/desktop` | Electron shell that hosts the web UI and a bundled server |
-| [`apps/marketing`](apps/marketing) | `@t3tools/marketing` | Astro landing / download pages |
-| [`packages/contracts`](packages/contracts) | `@t3tools/contracts` | Effect Schema types only — WS protocol, commands, events, models. **No runtime logic.** |
-| [`packages/shared`](packages/shared) | `@t3tools/shared` | Shared runtime helpers (git, model slugs, shell, net). Subpath exports, no barrel. |
-| [`packages/client-core`](packages/client-core) | `@t3tools/client-core` | Shared **client** logic used by web and TUI (session helpers, mentions, keybindings, follow-up queue) |
-| [`packages/effect-codex-app-server`](packages/effect-codex-app-server) | `effect-codex-app-server` | Generated Codex app-server JSON-RPC client |
-| [`packages/effect-acp`](packages/effect-acp) | `effect-acp` | Agent Client Protocol bindings (Cursor / other ACP agents) |
-| [`scripts`](scripts) | `@t3tools/scripts` | Dev runner, TUI launcher, desktop/release scripts |
+| Path                                                                   | Package                   | Role                                                                                                  |
+| ---------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [`apps/server`](apps/server)                                           | `t3`                      | WebSocket/HTTP server, orchestration, providers, git, PTY, SQLite                                     |
+| [`apps/web`](apps/web)                                                 | `@t3tools/web`            | React 19 + Vite UI (chat, composer, diffs, settings)                                                  |
+| [`apps/tui`](apps/tui)                                                 | `@maria_rcks/t1code`      | OpenTUI + React terminal UI (primary product surface)                                                 |
+| [`apps/desktop`](apps/desktop)                                         | `@t3tools/desktop`        | Electron shell that hosts the web UI and a bundled server                                             |
+| [`apps/marketing`](apps/marketing)                                     | `@t3tools/marketing`      | Astro landing / download pages                                                                        |
+| [`packages/contracts`](packages/contracts)                             | `@t3tools/contracts`      | Effect Schema types only — WS protocol, commands, events, models. **No runtime logic.**               |
+| [`packages/shared`](packages/shared)                                   | `@t3tools/shared`         | Shared runtime helpers (git, model slugs, shell, net). Subpath exports, no barrel.                    |
+| [`packages/client-core`](packages/client-core)                         | `@t3tools/client-core`    | Shared **client** logic used by web and TUI (session helpers, mentions, keybindings, follow-up queue) |
+| [`packages/effect-codex-app-server`](packages/effect-codex-app-server) | `effect-codex-app-server` | Generated Codex app-server JSON-RPC client                                                            |
+| [`packages/effect-acp`](packages/effect-acp)                           | `effect-acp`              | Agent Client Protocol bindings (Cursor / other ACP agents)                                            |
+| [`scripts`](scripts)                                                   | `@t3tools/scripts`        | Dev runner, TUI launcher, desktop/release scripts                                                     |
 
 ## Architecture
 
@@ -163,14 +163,14 @@ Always use **`bun run test`**. `bun test` is Bun’s built-in runner and is the 
 
 ### Commands
 
-| What you want | Command |
-|---------------|---------|
-| Whole monorepo | `bun run test` |
-| One package | `bun run test --filter=@t3tools/web` |
-| One file | `bun run test --filter=@t3tools/client-core -- src/followUpQueue.test.ts` |
-| Server (includes heavier cases) | `bun run test --filter=t3` |
-| Web browser tests | `bun run --cwd apps/web test:browser` (Playwright Chromium) |
-| Desktop smoke | `bun run test:desktop-smoke` |
+| What you want                   | Command                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| Whole monorepo                  | `bun run test`                                                            |
+| One package                     | `bun run test --filter=@t3tools/web`                                      |
+| One file                        | `bun run test --filter=@t3tools/client-core -- src/followUpQueue.test.ts` |
+| Server (includes heavier cases) | `bun run test --filter=t3`                                                |
+| Web browser tests               | `bun run --cwd apps/web test:browser` (Playwright Chromium)               |
+| Desktop smoke                   | `bun run test:desktop-smoke`                                              |
 
 Useful filters: `@t3tools/web`, `@t3tools/client-core`, `@t3tools/contracts`, `@t3tools/shared`, `@maria_rcks/t1code` (TUI), `t3` (server), `effect-acp`, `effect-codex-app-server`.
 
@@ -205,18 +205,18 @@ Useful filters: `@t3tools/web`, `@t3tools/client-core`, `@t3tools/contracts`, `@
 
 ### What to test when you change X
 
-| You changed | Minimum tests | Also run |
-|-------------|---------------|----------|
-| A shared helper in client-core | That file’s `*.test.ts` | Web + TUI packages if they call it |
-| Orchestration command or event shape | `packages/contracts` | Server decider + projector + one integration test |
-| `decider.ts` / invariants | `commandInvariants` + decider tests | `apps/server/integration` |
-| Provider adapter / Codex runtime | That provider’s `*.test.ts` | `ProviderCommandReactor` tests |
-| SQLite migration | Migration tests if present | Start server once against a fresh `T3CODE_HOME` |
-| Web composer / queue / scroll | client-core `followUpQueue` + web logic tests | Browser test if you changed DOM |
-| TUI composer actions | `composerAction.test.ts` | Manual `bun dev:tui` send + queue |
-| NativeApi / WS method | `contracts` `ws` tests + `wsServer.test.ts` | Web `wsNativeApi` / `wsTransport` tests |
-| Git / worktrees | `apps/server/src/git` tests | Web `GitActionsControl.logic` |
-| Only copy/branding | branding tests if they exist | `bun typecheck` |
+| You changed                          | Minimum tests                                 | Also run                                          |
+| ------------------------------------ | --------------------------------------------- | ------------------------------------------------- |
+| A shared helper in client-core       | That file’s `*.test.ts`                       | Web + TUI packages if they call it                |
+| Orchestration command or event shape | `packages/contracts`                          | Server decider + projector + one integration test |
+| `decider.ts` / invariants            | `commandInvariants` + decider tests           | `apps/server/integration`                         |
+| Provider adapter / Codex runtime     | That provider’s `*.test.ts`                   | `ProviderCommandReactor` tests                    |
+| SQLite migration                     | Migration tests if present                    | Start server once against a fresh `T3CODE_HOME`   |
+| Web composer / queue / scroll        | client-core `followUpQueue` + web logic tests | Browser test if you changed DOM                   |
+| TUI composer actions                 | `composerAction.test.ts`                      | Manual `bun dev:tui` send + queue                 |
+| NativeApi / WS method                | `contracts` `ws` tests + `wsServer.test.ts`   | Web `wsNativeApi` / `wsTransport` tests           |
+| Git / worktrees                      | `apps/server/src/git` tests                   | Web `GitActionsControl.logic`                     |
+| Only copy/branding                   | branding tests if they exist                  | `bun typecheck`                                   |
 
 ### Manual checks that unit tests will not catch
 
@@ -242,15 +242,15 @@ Prefer correctness over a green-but-wrong test. If a test mocks away the invaria
 
 ## Where to start reading
 
-| If you want… | Open this |
-|--------------|-----------|
-| Protocol and command types | `packages/contracts/src/orchestration.ts`, `ws.ts` |
-| “Is this command legal?” | `apps/server/src/orchestration/decider.ts` |
-| How events become UI state | `apps/server/src/orchestration/projector.ts` |
-| How a turn hits Codex | `apps/server/src/provider/Layers/CodexSessionRuntime.ts` |
-| WS entrypoint | `apps/server/src/wsServer.ts` |
-| Web chat | `apps/web/src/components/ChatView.tsx` |
-| TUI chat | `apps/tui/src/ui.tsx` + `composerAction.ts` |
-| Shared client helpers | `packages/client-core/src/` |
-| Remote / auth | [REMOTE.md](./REMOTE.md) |
-| Keybindings | [KEYBINDINGS.md](./KEYBINDINGS.md) |
+| If you want…               | Open this                                                |
+| -------------------------- | -------------------------------------------------------- |
+| Protocol and command types | `packages/contracts/src/orchestration.ts`, `ws.ts`       |
+| “Is this command legal?”   | `apps/server/src/orchestration/decider.ts`               |
+| How events become UI state | `apps/server/src/orchestration/projector.ts`             |
+| How a turn hits Codex      | `apps/server/src/provider/Layers/CodexSessionRuntime.ts` |
+| WS entrypoint              | `apps/server/src/wsServer.ts`                            |
+| Web chat                   | `apps/web/src/components/ChatView.tsx`                   |
+| TUI chat                   | `apps/tui/src/ui.tsx` + `composerAction.ts`              |
+| Shared client helpers      | `packages/client-core/src/`                              |
+| Remote / auth              | [REMOTE.md](./REMOTE.md)                                 |
+| Keybindings                | [KEYBINDINGS.md](./KEYBINDINGS.md)                       |
