@@ -86,7 +86,7 @@ export class WsTransport {
   private readonly pending = new Map<string, PendingRequest>();
   private readonly listeners = new Map<string, Set<(message: WsPush) => void>>();
   private readonly latestPushByChannel = new Map<string, WsPush>();
-  private readonly outboundQueue: string[] = [];
+  private readonly outboundQueue = new Map<string, string>();
   private reconnectAttempt = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private disposed = false;
@@ -107,6 +107,9 @@ export class WsTransport {
     params?: unknown,
     options?: RequestOptions,
   ): Promise<T> {
+    if (this.disposed) {
+      throw new Error("Transport disposed");
+    }
     if (typeof method !== "string" || method.length === 0) {
       throw new Error("Request method is required");
     }
@@ -122,6 +125,7 @@ export class WsTransport {
           ? null
           : setTimeout(() => {
               this.pending.delete(id);
+              this.outboundQueue.delete(id);
               reject(new Error(`Request timed out: ${method}`));
             }, timeoutMs);
 
@@ -131,7 +135,11 @@ export class WsTransport {
         timeout,
       });
 
-      this.send(encoded);
+      if (this.ws?.readyState !== 1) {
+        this.outboundQueue.set(id, encoded);
+      } else {
+        this.send(id, encoded);
+      }
     });
   }
 
@@ -189,7 +197,7 @@ export class WsTransport {
       pending.reject(new Error("Transport disposed"));
     }
     this.pending.clear();
-    this.outboundQueue.length = 0;
+    this.outboundQueue.clear();
     this.ws?.close();
     this.ws = null;
   }
@@ -222,7 +230,7 @@ export class WsTransport {
       }
       if (this.ws === ws) {
         this.ws = null;
-        this.outboundQueue.length = 0;
+        this.outboundQueue.clear();
         for (const [id, pending] of this.pending.entries()) {
           if (pending.timeout !== null) {
             clearTimeout(pending.timeout);
@@ -298,15 +306,21 @@ export class WsTransport {
     pending.resolve(message.result);
   }
 
-  private send(encoded: string) {
-    if (this.ws?.readyState !== 1) {
-      this.outboundQueue.push(encoded);
-      return;
-    }
+  private send(id: string, encoded: string) {
     try {
+      if (!this.ws || this.ws.readyState !== 1) {
+        throw new Error("WebSocket connection closed.");
+      }
       this.ws.send(encoded);
     } catch (error) {
-      throw asError(error, "Failed to send WebSocket request.");
+      const pending = this.pending.get(id);
+      if (pending) {
+        if (pending.timeout !== null) {
+          clearTimeout(pending.timeout);
+        }
+        this.pending.delete(id);
+        pending.reject(asError(error, "Failed to send WebSocket request."));
+      }
     }
   }
 
@@ -314,12 +328,9 @@ export class WsTransport {
     if (!this.ws || this.ws.readyState !== 1) {
       return;
     }
-    while (this.outboundQueue.length > 0) {
-      const next = this.outboundQueue.shift();
-      if (!next) {
-        continue;
-      }
-      this.ws.send(next);
+    for (const [id, encoded] of this.outboundQueue) {
+      this.outboundQueue.delete(id);
+      this.send(id, encoded);
     }
   }
 
