@@ -1,8 +1,10 @@
-export const TUI_SIDEBAR_WIDTH = 34;
+import { TUI_METRICS } from "./designSystem";
+
+export const TUI_SIDEBAR_WIDTH = TUI_METRICS.sidebarWidth;
 
 const SIDEBAR_TOGGLE_MAX_MAIN_COLUMNS = 56;
 const SIDEBAR_FORCE_COLLAPSE_MAX_MAIN_COLUMNS = 44;
-const COMPOSER_MODE_LABEL_MIN_MAIN_COLUMNS = 44;
+const COMPOSER_MODE_LABEL_MIN_MAIN_COLUMNS = 52;
 const COMPOSER_MODEL_LABEL_MIN_MAIN_COLUMNS = 62;
 // The traits control already truncates its label, so it can stay expanded
 // at widths where the rest of the composer footer still fits comfortably.
@@ -14,7 +16,6 @@ export type TuiResponsiveLayout = Readonly<{
   sidebarCollapsed: boolean;
   sidebarWidth: number;
   showSidebar: boolean;
-  showWindowDots: boolean;
   showSidebarAlphaBadge: boolean;
   sidebarTitle: string;
   showHeaderProjectBadge: boolean;
@@ -49,9 +50,6 @@ export function resolveTuiResponsiveLayout(input: {
     sidebarCollapsed,
     sidebarWidth: sidebarCollapsed ? 0 : TUI_SIDEBAR_WIDTH,
     showSidebar,
-    // The sidebar header has a fixed width when visible, so the macOS window dots
-    // should track sidebar visibility rather than the overall terminal width.
-    showWindowDots: showSidebar,
     showSidebarAlphaBadge: showSidebar,
     sidebarTitle: showSidebar ? "T1 Code" : "T1",
     showHeaderProjectBadge: input.viewportColumns >= 144,

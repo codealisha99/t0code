@@ -43,6 +43,34 @@ describe("resolveImageAttachmentFromPath", () => {
 });
 
 describe("resolveComposerSubmission", () => {
+  it("preserves indentation, blank lines, and meaningful spaces in pasted code", async () => {
+    const text =
+      'Fix this:\n```python\ndef example():\n    if True:\n        return "a  b"\n\n\n```';
+    await expect(resolveComposerSubmission({ text, homeDir: os.tmpdir() })).resolves.toEqual({
+      promptText: text,
+      attachments: [],
+    });
+  });
+
+  it("preserves code formatting when extracting an image attachment", async () => {
+    const { root, filePath } = await makeTempImage("example.png");
+    const code = 'Compare:\n```python\nif True:\n    print("a  b")\n```';
+    const result = await resolveComposerSubmission({
+      text: `${filePath}\n${code}`,
+      homeDir: root,
+    });
+    expect(result.promptText).toBe(code);
+    expect(result.attachments).toHaveLength(1);
+  });
+
+  it("leaves unresolved image paths and their surrounding formatting intact", async () => {
+    const text = "Inspect:\n    /missing-t0code-image.png\n\n\n    keep  spacing";
+    await expect(resolveComposerSubmission({ text, homeDir: os.tmpdir() })).resolves.toEqual({
+      promptText: text,
+      attachments: [],
+    });
+  });
+
   it("keeps local preview paths for image attachments resolved from pasted file paths", async () => {
     const { root, filePath } = await makeTempImage("clipboard-2026-03-25-120233-E549D4EE.png");
 

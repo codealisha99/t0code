@@ -1,3 +1,5 @@
+import { controlColors, syntaxColors, TUI_METRICS } from "./designSystem";
+import { WorkspaceWelcome } from "./WorkspaceWelcome";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import * as Duration from "effect/Duration";
@@ -668,16 +670,17 @@ function toRendererColor(color: TuiColor): RGBA {
 }
 
 function buildMessageMarkdownSyntax(palette: TuiPalette) {
+  const colors = syntaxColors(palette);
   return SyntaxStyle.fromStyles({
-    keyword: { fg: toRendererColor(palette.warning), bold: true },
-    string: { fg: RGBA.fromHex("#9bd1ff") },
-    comment: { fg: toRendererColor(palette.subtle), italic: true },
-    number: { fg: RGBA.fromHex("#8cc8ff") },
-    function: { fg: toRendererColor(palette.accent) },
-    type: { fg: RGBA.fromHex("#f7b267") },
-    operator: { fg: toRendererColor(palette.warning) },
-    variable: { fg: toRendererColor(palette.text) },
-    property: { fg: RGBA.fromHex("#8cc8ff") },
+    keyword: { fg: toRendererColor(colors.keyword), bold: true },
+    string: { fg: toRendererColor(colors.string) },
+    comment: { fg: toRendererColor(colors.comment), italic: true },
+    number: { fg: toRendererColor(colors.number) },
+    function: { fg: toRendererColor(colors.function) },
+    type: { fg: toRendererColor(colors.type) },
+    operator: { fg: toRendererColor(colors.operator) },
+    variable: { fg: toRendererColor(colors.variable) },
+    property: { fg: toRendererColor(colors.property) },
     "punctuation.bracket": { fg: toRendererColor(palette.text) },
     "punctuation.delimiter": { fg: toRendererColor(palette.muted) },
     "punctuation.special": { fg: toRendererColor(palette.subtle) },
@@ -690,12 +693,18 @@ function buildMessageMarkdownSyntax(palette: TuiPalette) {
     "markup.italic": { fg: toRendererColor(palette.text), italic: true },
     "markup.list": { fg: toRendererColor(palette.muted) },
     "markup.quote": { fg: toRendererColor(palette.muted), italic: true },
-    "markup.raw": { fg: RGBA.fromHex("#9bd1ff"), bg: toRendererColor(palette.surfaceAlt) },
-    "markup.raw.block": { fg: RGBA.fromHex("#9bd1ff"), bg: toRendererColor(palette.surfaceAlt) },
-    "markup.raw.inline": { fg: RGBA.fromHex("#9bd1ff"), bg: toRendererColor(palette.surfaceAlt) },
-    "markup.link": { fg: RGBA.fromHex("#7fb7ff"), underline: true },
-    "markup.link.label": { fg: RGBA.fromHex("#b7d7ff"), underline: true },
-    "markup.link.url": { fg: RGBA.fromHex("#7fb7ff"), underline: true },
+    "markup.raw": { fg: toRendererColor(palette.info), bg: toRendererColor(palette.surfaceAlt) },
+    "markup.raw.block": {
+      fg: toRendererColor(palette.info),
+      bg: toRendererColor(palette.surfaceAlt),
+    },
+    "markup.raw.inline": {
+      fg: toRendererColor(palette.info),
+      bg: toRendererColor(palette.surfaceAlt),
+    },
+    "markup.link": { fg: toRendererColor(palette.info), underline: true },
+    "markup.link.label": { fg: toRendererColor(palette.info), underline: true },
+    "markup.link.url": { fg: toRendererColor(palette.info), underline: true },
     label: { fg: toRendererColor(palette.success) },
     conceal: { fg: toRendererColor(palette.subtle) },
     default: { fg: toRendererColor(palette.text) },
@@ -703,44 +712,46 @@ function buildMessageMarkdownSyntax(palette: TuiPalette) {
 }
 
 function buildDiffSyntax(palette: TuiPalette) {
+  const colors = syntaxColors(palette);
   return SyntaxStyle.fromStyles({
-    keyword: { fg: RGBA.fromHex("#ff7b72"), bold: true },
-    string: { fg: RGBA.fromHex("#a5d6ff") },
-    comment: { fg: RGBA.fromHex("#8b949e"), italic: true },
-    number: { fg: RGBA.fromHex("#79c0ff") },
-    function: { fg: RGBA.fromHex("#d2a8ff") },
-    type: { fg: RGBA.fromHex("#ffa657") },
-    operator: { fg: RGBA.fromHex("#ffb86b") },
-    variable: { fg: toRendererColor(palette.text) },
-    property: { fg: RGBA.fromHex("#79c0ff") },
-    constant: { fg: RGBA.fromHex("#79c0ff") },
-    tag: { fg: RGBA.fromHex("#7ee787") },
-    attribute: { fg: RGBA.fromHex("#d2a8ff") },
-    "punctuation.bracket": { fg: RGBA.fromHex("#c9d1d9") },
-    "punctuation.delimiter": { fg: RGBA.fromHex("#c9d1d9") },
-    "punctuation.special": { fg: RGBA.fromHex("#8b949e") },
+    keyword: { fg: toRendererColor(colors.keyword), bold: true },
+    string: { fg: toRendererColor(colors.string) },
+    comment: { fg: toRendererColor(colors.comment), italic: true },
+    number: { fg: toRendererColor(colors.number) },
+    function: { fg: toRendererColor(colors.function) },
+    type: { fg: toRendererColor(colors.type) },
+    operator: { fg: toRendererColor(colors.operator) },
+    variable: { fg: toRendererColor(colors.variable) },
+    property: { fg: toRendererColor(colors.property) },
+    constant: { fg: toRendererColor(colors.constant) },
+    tag: { fg: toRendererColor(colors.tag) },
+    attribute: { fg: toRendererColor(colors.attribute) },
+    "punctuation.bracket": { fg: toRendererColor(colors.punctuation) },
+    "punctuation.delimiter": { fg: toRendererColor(colors.punctuation) },
+    "punctuation.special": { fg: toRendererColor(colors.punctuation) },
     default: { fg: toRendererColor(palette.text) },
   });
 }
 
-function buildCodeBlockSyntax(_palette: TuiPalette) {
+function buildCodeBlockSyntax(palette: TuiPalette) {
+  const colors = syntaxColors(palette);
   return SyntaxStyle.fromStyles({
-    keyword: { fg: RGBA.fromHex("#c9b37e"), bold: true },
-    string: { fg: RGBA.fromHex("#9ab37f") },
-    comment: { fg: RGBA.fromHex("#6f6f6f"), italic: true },
-    number: { fg: RGBA.fromHex("#b8a07a") },
-    function: { fg: RGBA.fromHex("#c7c7c7") },
-    type: { fg: RGBA.fromHex("#b3aaa0") },
-    operator: { fg: RGBA.fromHex("#a8a8a8") },
-    variable: { fg: RGBA.fromHex("#d0d0d0") },
-    property: { fg: RGBA.fromHex("#bbbbbb") },
-    constant: { fg: RGBA.fromHex("#c4c4c4") },
-    tag: { fg: RGBA.fromHex("#c9b37e") },
-    attribute: { fg: RGBA.fromHex("#b3aaa0") },
-    "punctuation.bracket": { fg: RGBA.fromHex("#9a9a9a") },
-    "punctuation.delimiter": { fg: RGBA.fromHex("#8a8a8a") },
-    "punctuation.special": { fg: RGBA.fromHex("#7c7c7c") },
-    default: { fg: RGBA.fromHex("#d0d0d0") },
+    keyword: { fg: toRendererColor(colors.keyword), bold: true },
+    string: { fg: toRendererColor(colors.string) },
+    comment: { fg: toRendererColor(colors.comment), italic: true },
+    number: { fg: toRendererColor(colors.number) },
+    function: { fg: toRendererColor(colors.function) },
+    type: { fg: toRendererColor(colors.type) },
+    operator: { fg: toRendererColor(colors.operator) },
+    variable: { fg: toRendererColor(colors.variable) },
+    property: { fg: toRendererColor(colors.property) },
+    constant: { fg: toRendererColor(colors.constant) },
+    tag: { fg: toRendererColor(colors.tag) },
+    attribute: { fg: toRendererColor(colors.attribute) },
+    "punctuation.bracket": { fg: toRendererColor(colors.punctuation) },
+    "punctuation.delimiter": { fg: toRendererColor(colors.punctuation) },
+    "punctuation.special": { fg: toRendererColor(colors.punctuation) },
+    default: { fg: toRendererColor(palette.text) },
   });
 }
 
@@ -1287,7 +1298,7 @@ const SIDEBAR_THREAD_TITLE_WIDTH =
   SIDEBAR_THREAD_TIMESTAMP_GAP -
   SIDEBAR_THREAD_TIMESTAMP_WIDTH -
   SIDEBAR_THREAD_LAYOUT_BUFFER;
-const COMPOSER_PLACEHOLDER = "Ask anything or @tag files/folders";
+const COMPOSER_PLACEHOLDER = "Describe a change…  @ files  / commands";
 const POPUP_MENU_WIDTH = 32;
 const MODEL_POPUP_WIDTH = 58;
 const MODEL_POPUP_PROVIDER_COLUMN_WIDTH = 22;
@@ -1543,16 +1554,6 @@ function Badge(props: { label: string; tone?: "default" | "accent" | "warn" }) {
   );
 }
 
-function WindowDots() {
-  return (
-    <box style={{ flexDirection: "row", alignItems: "center", marginRight: 2 }}>
-      <text content="●" style={{ fg: PALETTE.macRed, marginRight: 1 }} />
-      <text content="●" style={{ fg: PALETTE.macYellow, marginRight: 1 }} />
-      <text content="●" style={{ fg: PALETTE.macGreen, marginRight: 2 }} />
-    </box>
-  );
-}
-
 function renderAnimatedSendDots(
   tick: number,
 ): Array<{ key: string; character: string; color: TuiColor }> {
@@ -1585,7 +1586,7 @@ function SectionLabel(props: {
         marginBottom: 1,
       }}
     >
-      <text content={props.label} style={{ fg: PALETTE.subtle, flexGrow: 1 }} />
+      <text content={props.label} style={{ fg: PALETTE.muted, flexGrow: 1 }} />
       <box style={{ flexDirection: "row", gap: 0 }}>
         {(props.actions ?? []).map((action) => (
           <IconButton
@@ -1611,20 +1612,11 @@ function IconButton(props: {
   onPress: (event?: SidebarMouseEvent) => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const background = props.accent
-    ? hovered
-      ? PALETTE.accent
-      : PALETTE.composerBorder
-    : props.active
-      ? PALETTE.controlActive
-      : hovered
-        ? PALETTE.controlHover
-        : PALETTE.control;
-  const foreground = props.accent
-    ? ACTIVE_TUI_THEME.colors.selectedText
-    : props.active
-      ? PALETTE.text
-      : PALETTE.muted;
+  const { foreground, background } = controlColors(ACTIVE_TUI_THEME, {
+    primary: props.accent,
+    active: props.active,
+    hovered,
+  });
 
   return (
     <box
@@ -1667,21 +1659,13 @@ function ToolbarButton(props: {
   onPress: (event?: SidebarMouseEvent) => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const foreground = props.disabled ? PALETTE.subtle : props.active ? PALETTE.text : PALETTE.muted;
   const isBare = props.chrome === "bare";
-  const restingBackground = props.surface === "inset" ? PALETTE.controlInset : PALETTE.control;
-  const disabledBackground = props.surface === "inset" ? PALETTE.controlInset : PALETTE.control;
-  const background = isBare
-    ? "transparent"
-    : props.active
-      ? PALETTE.controlActive
-      : props.disabled
-        ? disabledBackground
-        : hovered
-          ? props.surface === "inset"
-            ? PALETTE.controlInsetHover
-            : PALETTE.controlHover
-          : restingBackground;
+  const { foreground, background } = controlColors(ACTIVE_TUI_THEME, {
+    active: props.active,
+    disabled: props.disabled,
+    hovered,
+    inset: props.surface === "inset",
+  });
 
   return (
     <box
@@ -1695,8 +1679,8 @@ function ToolbarButton(props: {
       }}
       style={{
         backgroundColor: background,
-        paddingLeft: isBare ? 1 : 1,
-        paddingRight: isBare ? 1 : 1,
+        paddingLeft: TUI_METRICS.space.inline,
+        paddingRight: TUI_METRICS.space.inline,
         marginRight: isBare ? 0 : (props.marginRight ?? 1),
         minHeight: 1,
         flexDirection: "row",
@@ -10674,14 +10658,14 @@ export function App({
             }}
           >
             <box style={{ flexDirection: "row", alignItems: "center" }}>
-              {responsiveLayout.showWindowDots ? <WindowDots /> : null}
+              <text content="▸" style={{ fg: PALETTE.accent, marginRight: 1 }} />
               <text
                 content={responsiveLayout.sidebarTitle}
                 style={{
                   fg: PALETTE.text,
                 }}
               />
-              {responsiveLayout.showSidebarAlphaBadge ? <Badge label="ALPHA" /> : null}
+              {responsiveLayout.showSidebarAlphaBadge ? <Badge label="preview" /> : null}
             </box>
           </box>
 
@@ -10705,7 +10689,7 @@ export function App({
             }}
           >
             <SectionLabel
-              label="PROJECTS"
+              label="Projects"
               actions={[
                 {
                   icon: "⇅",
@@ -13872,16 +13856,16 @@ export function App({
                     paddingRight: 1,
                   }}
                 >
-                  {!activeProject && !activeThread && !activeDraftThread ? (
-                    <box
-                      style={{
-                        backgroundColor: PALETTE.surface,
-                        padding: 2,
-                        marginBottom: 1,
-                      }}
-                    >
-                      <text content="booting workspace" style={{ fg: PALETTE.muted }} />
-                    </box>
+                  {timelineEntries.length === 0 &&
+                  pendingSends.length === 0 &&
+                  !showAssistantTyping &&
+                  !startupIssue ? (
+                    <WorkspaceWelcome
+                      theme={ACTIVE_TUI_THEME}
+                      hasProject={Boolean(activeProject || activeThread || activeDraftThread)}
+                      loading={!snapshot}
+                      compact={conversationPanelColumns < 64 || _renderer.height < 32}
+                    />
                   ) : null}
 
                   {startupIssue ? (
