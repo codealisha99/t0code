@@ -75,21 +75,12 @@ function scanInlineImagePathCandidates(input: string): InlineImagePathCandidate[
   return candidates;
 }
 
-function collapsePromptWhitespace(input: string): string {
-  return input
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n[ \t]+/g, "\n")
-    .replace(/[ \t]{2,}/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 function removeResolvedImagePaths(
   input: string,
   resolvedCandidates: ReadonlyArray<InlineImagePathCandidate>,
 ): string {
   if (resolvedCandidates.length === 0) {
-    return collapsePromptWhitespace(input);
+    return input.trim();
   }
   let cursor = 0;
   let output = "";
@@ -98,11 +89,10 @@ function removeResolvedImagePaths(
       continue;
     }
     output += input.slice(cursor, candidate.start);
-    output += " ";
     cursor = candidate.end;
   }
   output += input.slice(cursor);
-  return collapsePromptWhitespace(output);
+  return output.trim();
 }
 
 function expandHomePath(inputPath: string, homeDir: string): string {
@@ -161,7 +151,7 @@ export async function resolveComposerSubmission(input: {
   const candidates = scanInlineImagePathCandidates(input.text);
   if (candidates.length === 0) {
     return {
-      promptText: collapsePromptWhitespace(input.text),
+      promptText: input.text.trim(),
       attachments: [],
     };
   }

@@ -3,6 +3,18 @@ import { describe, expect, it } from "vitest";
 import { TUI_SIDEBAR_WIDTH, resolveTuiResponsiveLayout } from "./responsiveLayout";
 
 describe("resolveTuiResponsiveLayout", () => {
+  it("keeps the send action clear at 80 columns with the sidebar open", () => {
+    const layout = resolveTuiResponsiveLayout({
+      viewportColumns: 80,
+      sidebarCollapsedPreference: false,
+    });
+    expect(layout.showSidebar).toBe(true);
+    expect(layout.showComposerModeLabels).toBe(false);
+    expect(layout.showComposerModelLabel).toBe(false);
+    expect(layout.showComposerTraitsLabel).toBe(false);
+    expect(layout.showComposerDividers).toBe(false);
+  });
+
   it("keeps the full layout in wide terminals", () => {
     expect(
       resolveTuiResponsiveLayout({
@@ -16,7 +28,6 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarCollapsed: false,
         sidebarWidth: TUI_SIDEBAR_WIDTH,
         showSidebar: true,
-        showWindowDots: true,
         showSidebarAlphaBadge: true,
         sidebarTitle: "T1 Code",
         showHeaderProjectBadge: true,
@@ -41,7 +52,6 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarCollapsed: true,
         sidebarWidth: 0,
         showSidebar: false,
-        showWindowDots: false,
         showSidebarAlphaBadge: false,
         sidebarTitle: "T1",
         showHeaderProjectBadge: false,
@@ -66,7 +76,6 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarCollapsed: true,
         sidebarWidth: 0,
         showSidebar: false,
-        showWindowDots: false,
         showComposerModeLabels: true,
         showComposerModelLabel: true,
         showComposerTraitsLabel: true,
@@ -86,7 +95,6 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarForcedCollapsed: false,
         sidebarCollapsed: false,
         showSidebar: true,
-        showWindowDots: true,
         sidebarTitle: "T1 Code",
       }),
     );
@@ -101,7 +109,6 @@ describe("resolveTuiResponsiveLayout", () => {
     ).toEqual(
       expect.objectContaining({
         showSidebar: true,
-        showWindowDots: true,
         sidebarTitle: "T1 Code",
         showComposerModeLabels: true,
         showComposerModelLabel: true,
@@ -140,7 +147,6 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarForcedCollapsed: false,
         sidebarCollapsed: false,
         showSidebar: true,
-        showWindowDots: true,
         sidebarTitle: "T1 Code",
       }),
     );
