@@ -3,7 +3,10 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <h1 class="tagline">t0code is the best way to code with agents.</h1>
+  <section class="hero" aria-labelledby="hero-title">
+    <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> A local workspace for coding agents</p>
+    <h1 class="tagline" id="hero-title">Keep the agent<br />close to the code.</h1>
+    <p class="hero-copy">Work with Codex, Claude, Cursor, or OpenCode in a real project. Follow the conversation, inspect changes, run commands, and review approvals in one place.</p>
 
   <a
     id="download-btn"
@@ -17,10 +20,25 @@ import Layout from "../layouts/Layout.astro";
   </a>
 
   <a href="/download" class="other-platforms">Other platforms</a>
+  </section>
 
-  <div class="screenshot-wrap">
-    <img src="/screenshot.jpeg" alt="t0code" class="screenshot" />
-  </div>
+  <section class="workflow" aria-label="How t0code supports coding work">
+    <article class="workflow-item">
+      <span class="workflow-index">01</span>
+      <h2>Stay in your project</h2>
+      <p>Point t0code at a local repository and work against the files and branches you already use.</p>
+    </article>
+    <article class="workflow-item">
+      <span class="workflow-index">02</span>
+      <h2>See what changed</h2>
+      <p>Keep agent messages beside diffs, git actions, and the project terminal.</p>
+    </article>
+    <article class="workflow-item">
+      <span class="workflow-index">03</span>
+      <h2>Choose your surface</h2>
+      <p>Use the browser, terminal, or optional desktop shell with the same local server.</p>
+    </article>
+  </section>
 </Layout>
 
 <script>
@@ -94,144 +112,64 @@ import Layout from "../layouts/Layout.astro";
 
 <style>
   .main {
-    padding-top: 10vh;
+    width: 100%;
+    padding: clamp(3.5rem, 9vh, 7rem) var(--gutter) 5rem;
   }
 
-  /* ── Tagline ── */
+  .hero { width: min(100%, var(--content-width)); text-align: left; }
+  .eyebrow { display: flex; align-items: center; gap: .6rem; color: var(--fg-muted); font: 500 .8rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em; margin-bottom: 1.75rem; }
+  .eyebrow-mark { width: .55rem; height: .55rem; border-radius: 2px; background: var(--accent); }
 
   .tagline {
-    font-weight: 500;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    letter-spacing: -0.035em;
-    line-height: 1.15;
-    text-align: center;
-    margin: 0 0 6vh;
-    opacity: 0;
-    animation: fade-in 1s ease-out forwards;
+    font-weight: 560;
+    font-size: clamp(3rem, 8vw, 6.7rem);
+    letter-spacing: -.075em;
+    line-height: .99;
+    margin: 0;
+    max-width: 900px;
   }
 
-  /* ── Hero button ── */
+  .hero-copy { max-width: 610px; margin-top: 1.5rem; color: var(--fg-muted); font-size: clamp(1rem, 1.5vw, 1.15rem); line-height: 1.7; }
+
+  #download-btn { margin-top: 2rem; }
 
   .hero-button {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    background: #fafafa;
-    color: #09090b;
-    padding: 0.75rem 2rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 1.25rem;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.15s forwards;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    gap: .55rem;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    padding: .82rem 1.25rem;
+    border-radius: 7px;
+    font-weight: 650;
+    font-size: .9rem;
+    transition: background .18s ease, transform .18s ease;
+  }
+  .hero-button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .hero-button:active { transform: translateY(0); }
+  .hero-button-icon { display: none; width: 1em; height: 1em; flex-shrink: 0; }
+  :global([data-platform="mac"]) .hero-button-icon--apple,
+  :global([data-platform="win"]) .hero-button-icon--windows,
+  :global([data-platform="linux"]) .hero-button-icon--linux { display: block; }
+
+  .other-platforms { display: inline-block; margin-left: 1rem; color: var(--fg-muted); font-size: .875rem; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; }
+  .other-platforms:hover { color: var(--fg); }
+
+  .workflow { width: min(100%, var(--content-width)); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: clamp(4rem, 9vw, 8rem) auto 0; }
+  .workflow-item { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .workflow-index { color: var(--accent); font: .75rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .workflow-item h2 { margin-top: 1.15rem; font-size: 1.05rem; font-weight: 570; letter-spacing: -.02em; }
+  .workflow-item p { max-width: 30ch; margin-top: .6rem; color: var(--fg-dim); font-size: .875rem; line-height: 1.65; }
+
+  @media (max-width: 760px) {
+    .main { padding-top: 3.5rem; }
+    .tagline { font-size: clamp(3rem, 13vw, 5rem); }
+    .workflow { grid-template-columns: 1fr; gap: 1.75rem; }
+    .workflow-item p { max-width: 48ch; }
   }
 
-  .hero-button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 24px rgba(255, 255, 255, 0.08);
-  }
-
-  .hero-button:active {
-    transform: scale(0.98);
-  }
-
-  .hero-button-icon {
-    display: none;
-    width: 1em;
-    height: 1em;
-    flex-shrink: 0;
-  }
-
-  :global([data-platform="mac"]) .hero-button-icon--apple {
-    display: block;
-  }
-
-  :global([data-platform="win"]) .hero-button-icon--windows {
-    display: block;
-  }
-
-  :global([data-platform="linux"]) .hero-button-icon--linux {
-    display: block;
-  }
-
-  /* ── Other platforms link ── */
-
-  .other-platforms {
-    font-size: 0.825rem;
-    color: var(--fg-dim);
-    margin-bottom: 5vh;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.3s forwards;
-    transition: color 0.3s ease;
-    text-decoration: underline;
-    text-decoration-color: rgba(113, 113, 122, 0.4);
-    text-underline-offset: 3px;
-  }
-
-  .other-platforms:hover {
-    color: var(--fg-muted);
-    text-decoration-color: var(--fg-muted);
-  }
-
-  /* ── Screenshot ── */
-
-  .screenshot-wrap {
-    margin: 0 auto;
-    width: min(95vw, 1400px);
-    opacity: 0;
-    transform: scale(0.98);
-    animation: screenshot-in 1s ease-out 0.15s forwards;
-  }
-
-  .screenshot {
-    width: 100%;
-    display: block;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-  }
-
-  .screenshot-wrap::after {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 120px;
-    background: inherit;
-    margin-top: -1px;
-    opacity: 0.04;
-    transform: scaleY(-1);
-    mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  @keyframes screenshot-in {
-    from {
-      opacity: 0;
-      transform: scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* ── Mobile ── */
-
-  @media (max-width: 640px) {
-    .main {
-      padding-top: 7vh;
-    }
-
-    .tagline {
-      margin-bottom: 4vh;
-    }
-
-    .screenshot-wrap {
-      width: 95vw;
-    }
+  @media (max-width: 420px) {
+    .other-platforms { margin: 1rem 0 0; }
+    .hero-button { padding-inline: 1rem; }
   }
 </style>

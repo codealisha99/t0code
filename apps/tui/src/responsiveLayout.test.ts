@@ -29,7 +29,7 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarWidth: TUI_SIDEBAR_WIDTH,
         showSidebar: true,
         showSidebarAlphaBadge: true,
-        sidebarTitle: "T1 Code",
+        sidebarTitle: "t0code",
         showHeaderProjectBadge: true,
         showComposerModeLabels: true,
         showComposerModelLabel: true,
@@ -53,7 +53,7 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarWidth: 0,
         showSidebar: false,
         showSidebarAlphaBadge: false,
-        sidebarTitle: "T1",
+        sidebarTitle: "t0",
         showHeaderProjectBadge: false,
         showComposerModeLabels: true,
         showComposerModelLabel: true,
@@ -95,7 +95,7 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarForcedCollapsed: false,
         sidebarCollapsed: false,
         showSidebar: true,
-        sidebarTitle: "T1 Code",
+        sidebarTitle: "t0code",
       }),
     );
   });
@@ -109,7 +109,7 @@ describe("resolveTuiResponsiveLayout", () => {
     ).toEqual(
       expect.objectContaining({
         showSidebar: true,
-        sidebarTitle: "T1 Code",
+        sidebarTitle: "t0code",
         showComposerModeLabels: true,
         showComposerModelLabel: true,
         showComposerTraitsLabel: true,
@@ -147,7 +147,7 @@ describe("resolveTuiResponsiveLayout", () => {
         sidebarForcedCollapsed: false,
         sidebarCollapsed: false,
         showSidebar: true,
-        sidebarTitle: "T1 Code",
+        sidebarTitle: "t0code",
       }),
     );
   });

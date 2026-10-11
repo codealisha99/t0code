@@ -71,7 +71,7 @@ function extractFatalStartupError(output: string): string | null {
   }
   if (/\b(EACCES|EPERM)\b|permission denied/iu.test(normalized)) {
     const firstLine = normalized.split(/\r?\n/u, 1)[0] ?? normalized;
-    return `T1Code could not start because a required path is not writable. ${firstLine}`;
+    return `t0code could not start because a required path is not writable. ${firstLine}`;
   }
   return null;
 }
@@ -206,7 +206,7 @@ async function waitForServerPort(input: {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
-  throw new Error(`Timed out waiting for T1 server on ${input.host}:${input.port}.`);
+  throw new Error(`Timed out waiting for the t0code server on ${input.host}:${input.port}.`);
 }
 
 function resolveServerEntry(env: NodeJS.ProcessEnv = process.env): {

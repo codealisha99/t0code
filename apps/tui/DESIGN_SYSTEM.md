@@ -1,6 +1,6 @@
-# T1 Code terminal design system
+# t0code terminal design system
 
-T1 is a workspace for long coding sessions. The conversation is the primary
+t0code is a workspace for long coding sessions. The conversation is the primary
 surface; navigation, agent activity, and controls support it. Use restrained
 chrome, readable code, and visible state changes.
 

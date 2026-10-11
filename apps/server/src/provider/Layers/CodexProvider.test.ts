@@ -58,7 +58,7 @@ describe("CodexProvider", () => {
       assert.equal(snapshot.enabled, false);
       assert.equal(snapshot.status, "disabled");
       assert.equal(snapshot.auth.status, "unknown");
-      assert.equal(snapshot.message, "Codex is disabled in T3 Code settings.");
+      assert.equal(snapshot.message, "Codex is disabled in t0code settings.");
       assert.equal(
         snapshot.models.some((model) => model.slug === "gpt-custom" && model.isCustom),
         true,

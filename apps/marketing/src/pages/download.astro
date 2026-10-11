@@ -2,10 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Download — t0code" description="Download t0code for macOS, Windows, or Linux.">
+<Layout title="Download t0code for macOS, Windows, and Linux" description="Download the t0code desktop app for macOS, Windows, or Linux.">
+  <div class="download-page">
+  <p class="eyebrow">GET THE DESKTOP APP</p>
   <h1 class="heading">Download t0code</h1>
   <p class="subheading">
-    <span id="version-label">Loading latest release&hellip;</span>
+    <span id="version-label" aria-live="polite">Loading latest release&hellip;</span>
     <a id="changelog-link" class="changelog-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none">View changelog<span aria-hidden="true"> &#8599;</span></a>
   </p>
 
@@ -20,10 +22,12 @@ import Layout from "../layouts/Layout.astro";
         <a class="download-card" data-asset="arm64.dmg" href="#">
           <span class="card-arch">Apple Silicon (arm64)</span>
           <span class="card-format">.dmg</span>
+          <span class="card-status" aria-live="polite">Checking release&hellip;</span>
         </a>
         <a class="download-card" data-asset="x64.dmg" href="#">
           <span class="card-arch">Intel (x64)</span>
           <span class="card-format">.dmg</span>
+          <span class="card-status" aria-live="polite">Checking release&hellip;</span>
         </a>
       </div>
     </section>
@@ -38,6 +42,7 @@ import Layout from "../layouts/Layout.astro";
         <a class="download-card" data-asset="x64.exe" href="#">
           <span class="card-arch">Windows 10, 11</span>
           <span class="card-format">.exe</span>
+          <span class="card-status" aria-live="polite">Checking release&hellip;</span>
         </a>
       </div>
     </section>
@@ -52,6 +57,7 @@ import Layout from "../layouts/Layout.astro";
         <a class="download-card" data-asset="x86_64.AppImage" href="#">
           <span class="card-arch">x86_64</span>
           <span class="card-format">AppImage</span>
+          <span class="card-status" aria-live="polite">Checking release&hellip;</span>
         </a>
       </div>
     </section>
@@ -63,6 +69,7 @@ import Layout from "../layouts/Layout.astro";
       GitHub releases page<span aria-hidden="true"> &#8599;</span>
     </a>
   </p>
+  </div>
 </Layout>
 
 <script>
@@ -92,8 +99,11 @@ import Layout from "../layouts/Layout.astro";
         const match = (release.assets ?? []).find((a) => a.name.endsWith(`-${suffix}`));
         if (match) {
           card.href = match.browser_download_url;
+          card.querySelector(".card-status")?.remove();
         } else {
           card.href = RELEASES_URL;
+          const status = card.querySelector(".card-status");
+          if (status) status.textContent = "Not in the latest release · Browse releases";
         }
       });
     } catch {
@@ -102,6 +112,8 @@ import Layout from "../layouts/Layout.astro";
       }
       cards.forEach((card) => {
         card.href = RELEASES_URL;
+        const status = card.querySelector(".card-status");
+        if (status) status.textContent = "Release info unavailable · Browse releases";
       });
     }
   }
@@ -110,29 +122,24 @@ import Layout from "../layouts/Layout.astro";
 </script>
 
 <style>
-  .main {
-    padding: 8vh 1.5rem 4rem;
-  }
+  .main { width: 100%; padding: clamp(3rem, 8vh, 6rem) var(--gutter) 5rem; }
+  .download-page { width: min(100%, 720px); }
+  .eyebrow { margin-bottom: 1rem; color: var(--accent); font: 500 .75rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
 
   /* ── Heading ── */
 
   .heading {
-    font-weight: 500;
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    letter-spacing: -0.035em;
-    line-height: 1.15;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    animation: fade-in 1s ease-out forwards;
+    font-weight: 560;
+    font-size: clamp(2.25rem, 6vw, 4.25rem);
+    letter-spacing: -.065em;
+    line-height: 1.05;
+    margin-bottom: .75rem;
   }
 
   .subheading {
     font-size: 0.9rem;
     color: var(--fg-dim);
-    margin-bottom: 3.5rem;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.1s forwards;
+    margin-bottom: 3rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -159,9 +166,7 @@ import Layout from "../layouts/Layout.astro";
     max-width: 720px;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.2s forwards;
+    gap: 2rem;
   }
 
   .platform-section {
@@ -204,15 +209,15 @@ import Layout from "../layouts/Layout.astro";
     flex-direction: column;
     gap: 0.2rem;
     padding: 0.85rem 1rem;
-    border-radius: 10px;
+    border-radius: 7px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.02);
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    background: var(--surface);
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
 
   .download-card:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
     transform: translateY(-1px);
   }
 
@@ -229,6 +234,7 @@ import Layout from "../layouts/Layout.astro";
     font-size: 0.8rem;
     color: var(--fg-dim);
   }
+  .card-status { margin-top: .4rem; color: var(--fg-dim); font-size: .75rem; line-height: 1.4; }
 
   /* ── Releases link ── */
 
@@ -236,8 +242,6 @@ import Layout from "../layouts/Layout.astro";
     margin-top: 3rem;
     font-size: 0.825rem;
     color: var(--fg-dim);
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.35s forwards;
   }
 
   .releases-link a {
@@ -256,16 +260,10 @@ import Layout from "../layouts/Layout.astro";
   /* ── Mobile ── */
 
   @media (max-width: 640px) {
-    .main {
-      padding: 5vh 1.25rem 4rem;
-    }
-
-    .platforms {
-      padding: 0 0.25rem;
-    }
-
-    .download-cards {
-      grid-template-columns: 1fr;
-    }
+    .main { padding-block: 3rem; }
+    .download-page { min-width: 0; }
+    .platforms { padding: 0; }
+    .download-cards { grid-template-columns: 1fr; }
+    .subheading { align-items: flex-start; flex-direction: column; gap: .4rem; }
   }
 </style>

@@ -51,7 +51,7 @@ export function resolveTuiResponsiveLayout(input: {
     sidebarWidth: sidebarCollapsed ? 0 : TUI_SIDEBAR_WIDTH,
     showSidebar,
     showSidebarAlphaBadge: showSidebar,
-    sidebarTitle: showSidebar ? "T1 Code" : "T1",
+    sidebarTitle: showSidebar ? "t0code" : "t0",
     showHeaderProjectBadge: input.viewportColumns >= 144,
     showComposerModeLabels,
     showComposerModelLabel,
