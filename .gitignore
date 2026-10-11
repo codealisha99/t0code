@@ -22,3 +22,4 @@ __screenshots__/
 .tanstack
 apps/server/userdata
 apps/server/caches
+.vercel
