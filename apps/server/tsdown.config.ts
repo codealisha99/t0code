@@ -9,7 +9,10 @@ export default defineConfig({
   outDir: "dist",
   sourcemap: true,
   clean: true,
-  noExternal: (id) => id.startsWith("@t3tools/"),
+  noExternal: (id) =>
+    id.startsWith("@t3tools/") ||
+    id.startsWith("effect-acp/") ||
+    id.startsWith("effect-codex-app-server/"),
   inlineOnly: false,
   banner: {
     js: "#!/usr/bin/env node\n",
