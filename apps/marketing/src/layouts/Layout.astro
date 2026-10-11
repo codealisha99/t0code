@@ -5,8 +5,8 @@ interface Props {
 }
 
 const {
-  title = "t0code",
-  description = "t0code — code with agents in your terminal.",
+  title = "t0code — a workspace for coding agents",
+  description = "Work with coding agents in your real project, with conversations, diffs, terminals, and approvals together.",
 } = Astro.props;
 ---
 
@@ -15,12 +15,10 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
-      rel="stylesheet"
-    />
+    <meta property="og:site_name" content="t0code" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#111310" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
@@ -29,30 +27,27 @@ const {
   </head>
   <body>
     <div class="page">
-      <nav class="nav">
-        <a href="/" class="nav-brand">
-          <img src="/icon.png" alt="T3" class="nav-icon" />
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/" class="nav-brand" aria-label="t0code home">
+          <img src="/brand-mark.svg" alt="" class="nav-icon" />
+          <span>t0code</span>
         </a>
-        <a
-          href="https://github.com/codealisha99/t0code"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="nav-github"
-        >
-          GitHub
-          <span class="nav-github-arrow" aria-hidden="true">&#8599;</span>
-        </a>
+        <div class="nav-links">
+          <a href="/download" class="nav-link">Download</a>
+          <a href="https://github.com/codealisha99/t0code" target="_blank" rel="noopener noreferrer" class="nav-github">
+            GitHub <span aria-hidden="true">&#8599;</span>
+          </a>
+        </div>
       </nav>
 
-      <main class="main">
-        <slot />
-      </main>
+      <main class="main"><slot /></main>
 
       <footer class="footer">
-        <span class="footer-copy">&copy; {new Date().getFullYear()} T3 Tools Inc</span>
-        <div class="footer-links">
+        <span class="footer-copy">t0code is maintained by <a href="https://alishakarma.com">Alisha Karma</a>.</span>
+        <div class="footer-links" aria-label="Creator and project links">
           <a href="https://github.com/codealisha99/t0code" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://discord.gg/jn4EGJjrvv" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="https://x.com/karmalisha" target="_blank" rel="noopener noreferrer">X</a>
+          <a href="mailto:lishykarma99@gmail.com">Contact</a>
         </div>
       </footer>
     </div>
@@ -61,168 +56,76 @@ const {
 
 <style is:global>
   :root {
-    --bg: #09090b;
-    --fg: #fafafa;
-    --fg-muted: #a1a1aa;
-    --fg-dim: #71717a;
-    --border: rgba(255, 255, 255, 0.08);
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
     color-scheme: dark;
+    --bg: #111310;
+    --surface: #191c18;
+    --fg: #f1f2eb;
+    --fg-muted: #bec4b6;
+    --fg-dim: #92998a;
+    --accent: #c5e478;
+    --accent-hover: #d5f08e;
+    --accent-foreground: #18200e;
+    --border: #30352d;
+    --border-hover: #525a49;
+    --surface-hover: #20241e;
+    --gutter: clamp(1.25rem, 5vw, 5rem);
+    --content-width: 1160px;
   }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     overflow-x: hidden;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    z-index: 9999;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  img {
-    display: block;
-    max-width: 100%;
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
   }
 </style>
 
 <style>
-  /* ── Page ── */
-
-  .page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-  }
-
-  /* ── Navbar ── */
-
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
   .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2.5rem;
-    opacity: 0.5;
-    transition: opacity 0.4s ease;
+    min-height: 68px;
+    padding: 1rem var(--gutter);
+    border-bottom: 1px solid var(--border);
   }
-
-  .nav:hover {
-    opacity: 1;
-  }
-
-  .nav-brand {
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-  }
-
-  .nav-github {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: var(--fg-muted);
-    font-size: 0.875rem;
-    transition: color 0.3s ease;
-  }
-
-  .nav-github:hover {
-    color: var(--fg);
-  }
-
-  .nav-github-arrow {
-    display: inline-block;
-    transition: transform 0.3s ease;
-  }
-
-  .nav-github:hover .nav-github-arrow {
-    transform: translateX(2px) translateY(-1px);
-  }
-
-  /* ── Main content ── */
-
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* ── Footer ── */
-
+  .nav-brand { display: flex; align-items: center; gap: .7rem; font-weight: 650; letter-spacing: -.03em; }
+  .nav-icon { width: 30px; height: 30px; border-radius: 8px; }
+  .nav-links, .footer-links { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-link, .nav-github { color: var(--fg-muted); font-size: .875rem; transition: color .18s ease; }
+  .nav-github { display: flex; align-items: center; gap: .35rem; }
+  .nav-github span { color: var(--accent); }
+  .nav-link:hover, .nav-github:hover, .footer a:hover { color: var(--fg); }
+  .main { flex: 1; display: flex; flex-direction: column; align-items: center; }
   .footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2.5rem;
-    font-size: 0.8rem;
+    gap: 1rem;
+    padding: 1.35rem var(--gutter);
+    border-top: 1px solid var(--border);
     color: var(--fg-dim);
+    font-size: .8rem;
   }
-
-  .footer-links {
-    display: flex;
-    gap: 1.25rem;
-  }
-
-  .footer-links a {
-    color: var(--fg-dim);
-    transition: color 0.3s ease;
-  }
-
-  .footer-links a:hover {
-    color: var(--fg);
-  }
-
-  /* ── Mobile ── */
-
+  .footer-copy a { color: var(--fg-muted); }
+  .footer-links { gap: 1.25rem; }
+  .footer-links a { color: var(--fg-dim); transition: color .18s ease; }
   @media (max-width: 640px) {
-    .nav {
-      padding: 1.25rem;
-    }
-
-    .footer {
-      padding: 1.25rem;
-    }
+    .nav { min-height: 60px; }
+    .nav-links { gap: 1rem; }
+    .footer { align-items: flex-start; flex-direction: column; padding-block: 1.25rem; }
+    .footer-links { flex-wrap: wrap; gap: 1rem; }
   }
 </style>

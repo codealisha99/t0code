@@ -1,15 +1,19 @@
 {
   "name": "@maria_rcks/t1code",
   "version": "0.0.24",
-  "description": "Terminal-first T3 Code fork with an OpenTUI client",
-  "homepage": "https://github.com/maria-rcks/t1code#readme",
+  "description": "Terminal UI for the t0code coding-agent workspace",
+  "homepage": "https://github.com/codealisha99/t0code#readme",
   "bugs": {
-    "url": "https://github.com/maria-rcks/t1code/issues"
+    "url": "https://github.com/codealisha99/t0code/issues"
   },
   "license": "MIT",
+  "author": {
+    "name": "Alisha Karma",
+    "url": "https://github.com/codealisha99"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maria-rcks/t1code.git",
+    "url": "git+https://github.com/codealisha99/t0code.git",
     "directory": "apps/tui"
   },
   "bin": {

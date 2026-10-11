@@ -3,7 +3,7 @@ import { createAdvertisedEndpoint } from "@t3tools/shared/advertisedEndpoint";
 
 const CORE_PROVIDER = {
   id: "t1code-core",
-  label: "T1Code",
+  label: "t0code",
   kind: "core",
   isAddon: false,
 } as const;
@@ -51,7 +51,7 @@ export function buildCoreAdvertisedEndpoints(input: {
       status: "available",
       isDefault: true,
       description:
-        "Current T1Code backend endpoint for local browsers and attachable TUI sessions.",
+        "Current t0code backend endpoint for local browsers and attachable TUI sessions.",
     }),
   ];
 }

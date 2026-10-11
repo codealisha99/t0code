@@ -21,7 +21,7 @@ describe("AdvertisedEndpoints", () => {
         label: "Local backend",
         provider: {
           id: "t1code-core",
-          label: "T1Code",
+          label: "t0code",
           kind: "core",
           isAddon: false,
         },
@@ -36,7 +36,7 @@ describe("AdvertisedEndpoints", () => {
         status: "available",
         isDefault: true,
         description:
-          "Current T1Code backend endpoint for local browsers and attachable TUI sessions.",
+          "Current t0code backend endpoint for local browsers and attachable TUI sessions.",
       },
     ]);
   });
