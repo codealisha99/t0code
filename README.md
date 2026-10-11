@@ -13,7 +13,9 @@ _A local full-stack client for coding agents._
 
 t0code is a Bun/TypeScript monorepo: a WebSocket server with SQLite persistence, a React web app, a terminal UI, and an optional Electron shell. Chat with Codex, Claude, Cursor, or OpenCode against a real repo, with git, diffs, terminals, and approvals in one place.
 
-Maintained by [Alisha Karma](https://alishakarma.com) · [GitHub](https://github.com/codealisha99) · [Contact](mailto:lishykarma99@gmail.com)
+Maintained by [Alisha Karma](https://alishakarma.com) · [GitHub](https://github.com/codealisha99) · [X](https://x.com/karmalisha) · [Contact](mailto:lishykarma99@gmail.com)
+
+See [BRAND.md](./BRAND.md) for the logo, palette, and product voice guidelines.
 
 ## Requirements
 
