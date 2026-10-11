@@ -417,6 +417,8 @@ function resolveDesktopRuntimeDependencies(
   return resolveCatalogDependencies(runtimeDependencies, catalog, "apps/desktop");
 }
 
+const BUNDLED_SERVER_WORKSPACE_DEPENDENCIES = new Set(["effect-acp", "effect-codex-app-server"]);
+
 function resolveGitHubPublishConfig():
   | {
       readonly provider: "github";
@@ -535,12 +537,19 @@ const buildDesktopArtifact = Effect.fn("buildDesktopArtifact")(function* (
   }
 
   const resolvedServerDependencies = yield* Effect.try({
-    try: () =>
-      resolveCatalogDependencies(
-        serverDependencies,
+    try: () => {
+      const runtimeDependencies = Object.fromEntries(
+        Object.entries(serverDependencies).filter(
+          ([name]) => !BUNDLED_SERVER_WORKSPACE_DEPENDENCIES.has(name),
+        ),
+      );
+
+      return resolveCatalogDependencies(
+        runtimeDependencies,
         rootPackageJson.workspaces.catalog,
         "apps/server",
-      ),
+      );
+    },
     catch: (cause) =>
       new BuildScriptError({
         message: "Could not resolve production dependencies from apps/server/package.json.",
