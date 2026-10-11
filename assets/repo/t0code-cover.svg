@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024" fill="none">
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" stroke="#20241E" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1536" height="1024" fill="#111310"/>
+  <rect width="1536" height="1024" fill="url(#grid)" opacity=".62"/>
+  <rect x="570" y="184" width="396" height="396" rx="88" fill="#191C18" stroke="#30352D" stroke-width="2"/>
+  <g fill="#C5E478">
+    <path d="M666 266h48v44h41v42h-41v104c0 22 13 35 36 35h5v44h-19c-49 0-77-28-77-77V352h-31v-42h38v-44Z"/>
+    <rect x="764" y="278" width="126" height="258" rx="58"/>
+    <rect x="798" y="312" width="58" height="190" rx="28" fill="#191C18"/>
+    <path d="m807 364 29 25-29 25v-20l12-5-12-5v-20Z"/>
+    <rect x="831" y="414" width="24" height="9" rx="2"/>
+  </g>
+  <text x="768" y="718" text-anchor="middle" fill="#F1F2EB" font-family="Inter, ui-sans-serif, sans-serif" font-size="132" font-weight="700" letter-spacing="-8">t0code</text>
+  <text x="768" y="792" text-anchor="middle" fill="#BEC4B6" font-family="SFMono-Regular, Consolas, monospace" font-size="28" letter-spacing="5">CODE WITH AGENTS IN YOUR TERMINAL</text>
+  <rect x="683" y="852" width="170" height="4" rx="2" fill="#C5E478"/>
+</svg>
