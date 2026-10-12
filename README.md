@@ -1,76 +1,31 @@
-<div align="center">
-
 # t0code
 
-[![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)](./LICENSE)
-[![GitHub](https://img.shields.io/badge/github-codealisha99%2Ft0code-111111?style=flat-square&logo=github)](https://github.com/codealisha99/t0code)
+t0code is a local coding-agent workspace. It connects a WebSocket server to a React web app, terminal UI, and optional Electron shell. Use installed coding-agent CLIs against a real project, with conversation history, tool activity, diffs, approvals, Git tools, and terminals.
 
-<img src="./assets/repo/t0code-cover.png" alt="t0code cover" width="1000" />
+## Quick start
 
-_A local full-stack client for coding agents._
-
-</div>
-
-t0code is a Bun/TypeScript monorepo: a WebSocket server with SQLite persistence, a React web app, a terminal UI, and an optional Electron shell. Chat with Codex, Claude, Cursor, or OpenCode against a real repo, with git, diffs, terminals, and approvals in one place.
-
-Maintained by [Alisha Karma](https://alishakarma.com) · [GitHub](https://github.com/codealisha99) · [X](https://x.com/karmalisha) · [Contact](mailto:lishykarma99@gmail.com)
-
-See [BRAND.md](./BRAND.md) for the logo, palette, and product voice guidelines.
-
-## Requirements
-
-- Bun `^1.3.9`
-- Node `^24.13.1` (for some server/desktop tooling)
-- A provider CLI such as Codex (`codex`) for the default agent
-
-## Install
+Requirements: Bun `^1.3.9`, Node.js `^24.13.1`, Git, and at least one installed and authenticated provider CLI (Codex is the default).
 
 ```bash
 git clone https://github.com/codealisha99/t0code.git
 cd t0code
 bun install
-```
-
-## Run the stack
-
-Web (server + browser UI):
-
-```bash
 bun dev
 ```
 
-Terminal UI (server + TUI):
+Open the web URL printed by the dev runner (normally `http://localhost:5733`). The server listens on port `3773`. No `.env` file is required for a local demo; provider credentials are managed by each provider CLI. To use another shell, run `bun dev:tui` or `bun dev:desktop`.
+
+## Checks
 
 ```bash
-bun dev:tui
+bun fmt
+bun lint
+bun typecheck
+bun run test
 ```
 
-Desktop (Electron + web renderer):
+## Guides
 
-```bash
-bun dev:desktop
-```
-
-Marketing site:
-
-```bash
-bun dev:marketing
-```
-
-Server only:
-
-```bash
-bun dev:server
-```
-
-Default local ports are server `3773` and web `5733`. The web app talks to the server over WebSocket.
-
-## Product notes
-
-- While a turn is running, a new prompt is **queued** and sent when that turn finishes.
-- Submitting a message **scrolls the timeline to the bottom**.
-- Server data lives under `T3CODE_HOME` (default `~/.t3`). See [REMOTE.md](./REMOTE.md) for host, auth token, and remote access.
-
-Architecture, package map, and what to test: [ARCHITECTURE.md](./ARCHITECTURE.md).
-
-The cover image at [`assets/repo/t0code-cover.png`](./assets/repo/t0code-cover.png) is also the GitHub social preview. Upload the same file under Settings → Social preview if GitHub does not pick it up from the README.
+- [Project guide](docs/PROJECT_GUIDE.md): features, architecture, data flow, and project status.
+- [Demo guide](docs/DEMO_GUIDE.md): setup, walkthrough, pitch, and troubleshooting.
+- [API dependencies](docs/API_DEPENDENCIES.md): integrations, credentials, environment variables, and optional services.

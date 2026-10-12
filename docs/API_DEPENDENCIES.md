@@ -1,0 +1,56 @@
+# API dependencies and configuration
+
+The normal local run needs no application API key. Provider sign-in is handled by each installed provider CLI. The server stores data in local SQLite; it does not require a separately hosted database.
+
+## Runtime integrations
+
+| Integration                          | Status / purpose                                                  | If unavailable                                                    | Credentials and docs                                                                                                                                                                          |
+| ------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Codex CLI / app-server               | Default provider; implemented and actively launched by the server | Codex sessions unavailable                                        | Install and authenticate Codex: [Codex docs](https://developers.openai.com/codex/). Uses CLI-managed auth; no t0code API key required.                                                        |
+| Claude Agent SDK / Claude Code       | Optional provider adapter; implemented                            | Claude sessions unavailable                                       | Use the provider's supported install/auth flow: [Claude Code setup](https://docs.anthropic.com/en/docs/claude-code/getting-started). Credentials remain provider-managed.                     |
+| Cursor CLI via ACP                   | Optional provider adapter; implemented                            | Cursor sessions unavailable                                       | [Cursor CLI / ACP docs](https://prod.cursor.com/docs/cli/acp). Uses Cursor's own account/auth flow.                                                                                           |
+| OpenCode CLI / SDK                   | Optional provider adapter; implemented                            | OpenCode sessions unavailable                                     | [OpenCode provider docs](https://docs.opencode.ai/docs/providers). Provider accounts/configuration are managed by OpenCode.                                                                   |
+| GitHub CLI (`gh`)                    | Optional source-control integration; used for repo operations     | GitHub-specific repo operations unavailable; local Git remains    | Install and run `gh auth login`: [GitHub CLI](https://cli.github.com/).                                                                                                                       |
+| GitLab CLI (`glab`)                  | Optional source-control integration; used for repo operations     | GitLab-specific repo operations unavailable; local Git remains    | Install and run `glab auth login`: [GitLab CLI](https://gitlab.com/gitlab-org/cli).                                                                                                           |
+| Azure CLI + Azure DevOps extension   | Optional source-control integration                               | Azure DevOps-specific operations unavailable                      | Install Azure CLI/extension and run `az login`: [Azure DevOps CLI](https://learn.microsoft.com/azure/devops/cli/).                                                                            |
+| Bitbucket REST API                   | Optional source-control integration; actively called by server    | Bitbucket repo operations unavailable                             | Configure credentials below: [Bitbucket API tokens](https://support.atlassian.com/bitbucket-cloud/docs/using-api-tokens/), [REST API](https://developer.atlassian.com/cloud/bitbucket/rest/). |
+| PostHog                              | Anonymous event telemetry; enabled by default, best-effort        | No telemetry export; product workflows continue                   | Default host/key are built in. Disable with `T3CODE_TELEMETRY_ENABLED=false`, or configure host/key: [PostHog](https://posthog.com/docs).                                                     |
+| GitHub Releases API                  | Marketing download page fetches latest public release directly    | Latest-release download details unavailable; release link remains | Public unauthenticated request to [`codealisha99/t0code` releases](https://github.com/codealisha99/t0code/releases); no credential configured.                                                |
+| GitHub Releases / `electron-updater` | Desktop checks/downloads published app updates                    | In-app update checks unavailable                                  | Uses public GitHub releases by default. Optional token/repository variables below for private or custom release setups. [electron-updater](https://www.electron.build/auto-update).           |
+
+## Storage and development/deployment services
+
+| Component                       | Status                                                                   | Notes                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| SQLite (Bun / Node runtime)     | Required, local and actively used                                        | Embedded database in the t0code data directory; no database URL, account, or service credential. Requires a supported runtime. |
+| Git                             | Required for repository workflows                                        | Local executable; no hosted account needed for local Git operations.                                                           |
+| Vercel                          | Deployment project linked for the marketing app, not required at runtime | No deployment service is needed to run the app locally. No credentials or deployment were used for this task.                  |
+| Bun, Node.js, Turborepo, Vitest | Development/build tools                                                  | Installed from the lockfile; no service credentials.                                                                           |
+
+This repository has no GitHub Actions workflow files. Provider and service pricing is not estimated here: costs depend on the account, plan, and model selected outside t0code; verify current terms with the linked provider.
+
+## Environment variables
+
+No environment variables are mandatory for a local web demo. `bun dev` selects defaults and sets the local client/server connection. The following variables configure optional behavior; never commit credential values.
+
+| Variable                                                                    | Purpose / default                                                                                                                |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `T3CODE_HOME`                                                               | Server and desktop data directory; defaults to `~/.t3`.                                                                          |
+| `T3CODE_MODE`                                                               | Server mode (`web`, `desktop`, or `tui`); defaults to web behavior.                                                              |
+| `T3CODE_HOST`, `T3CODE_PORT`                                                | Server bind host/port; local dev runner normally chooses localhost and port `3773`.                                              |
+| `T3CODE_AUTH_TOKEN`                                                         | WebSocket authentication token, needed for authenticated/remote server use; do not expose it. See [remote access](../REMOTE.md). |
+| `T3CODE_NO_BROWSER`                                                         | Disable automatic browser opening.                                                                                               |
+| `T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD`                                    | Allow server to bootstrap the current directory as a project.                                                                    |
+| `T3CODE_LOG_WS_EVENTS`                                                      | Enable WebSocket event logging.                                                                                                  |
+| `VITE_WS_URL`                                                               | Override the web client's WebSocket URL; normally set by the dev runner.                                                         |
+| `VITE_DEV_SERVER_URL`, `PORT`                                               | Desktop/web development URLs and Vite port; normally supplied by scripts.                                                        |
+| `T3CODE_TELEMETRY_ENABLED`                                                  | Enable telemetry; default `true`. Set `false` to disable.                                                                        |
+| `T3CODE_POSTHOG_HOST`, `T3CODE_POSTHOG_KEY`                                 | Override telemetry host/key; defaults are provided by the app. Do not paste secret project values into docs.                     |
+| `T3CODE_TELEMETRY_FLUSH_BATCH_SIZE`, `T3CODE_TELEMETRY_MAX_BUFFERED_EVENTS` | Optional telemetry buffering controls (defaults: 20 and 1000).                                                                   |
+| `T3CODE_BITBUCKET_ACCESS_TOKEN`                                             | Bitbucket bearer token; alternatively use email + API token.                                                                     |
+| `T3CODE_BITBUCKET_EMAIL`, `T3CODE_BITBUCKET_API_TOKEN`                      | Bitbucket API-token authentication pair.                                                                                         |
+| `T3CODE_BITBUCKET_API_BASE_URL`                                             | Bitbucket API base URL override; defaults to `https://api.bitbucket.org/2.0`.                                                    |
+| `T3CODE_DESKTOP_UPDATE_REPOSITORY`                                          | Desktop updater repository override; defaults to repository metadata.                                                            |
+| `T3CODE_DESKTOP_UPDATE_GITHUB_TOKEN` or `GH_TOKEN`                          | Optional desktop update token, used for authenticated release access.                                                            |
+
+Provider API keys are not t0code environment settings; configure them in the corresponding provider CLI/account. Other `T3CODE_*` and `T1CODE_*` variables support developer diagnostics, headless tests, or the legacy-compatible TUI and are not needed for the standard demo.
